@@ -107,24 +107,27 @@ export default class AccountsController {
     }
 
     public async show({params, response}: HttpContextContract) {
-      const accountExist: Accounts = await Accounts.findOrFail(params.id)
+      const validAccount: Accounts | null = await Accounts.findOrFail(params.id)
       const authorization: string[] = response.header("Authorization", 'Bearer').request.rawHeaders
       const findAuthorization: number = authorization.indexOf('Authorization') + 1
       const validHeader: boolean = authorization[findAuthorization].split(' ')[0] === 'Bearer' && authorization[findAuthorization].split(' ').length === 2
       const token: string = authorization[findAuthorization].split(' ')[1]
-      const tokenOK: boolean = accountExist.tokentmp === token
+      const tokenOK: boolean = validAccount.tokentmp === token
 
-      if (validHeader && tokenOK && accountExist.tokentmp !== null) {
+      if (validHeader && tokenOK && validAccount.tokentmp !== null) {
+        response.status(200)
         return {
           "status": 200,
-          "name": accountExist.name,
-          "password": accountExist.password,
-          "email": accountExist.email,
-          "ip": accountExist.ip,
+          "name": validAccount.name,
+          "password": validAccount.password,
+          "email": validAccount.email,
+          "ip": validAccount.ip,
+          "vip": validAccount.vip,
+          "viptime": validAccount.viptime
         }
       } else {
         await Accounts.updateOrCreate({
-          "id": accountExist.id,
+          "id": validAccount.id,
         }, {
           "tokentmp": ''
         })
@@ -135,5 +138,53 @@ export default class AccountsController {
       }
     }
 
+    public async update({params, request, response}: HttpContextContract) {
+      const body = request.body()
+      const validAccount : Accounts = await Accounts.findOrFail(params.id)
+      const authorization: string[] = response.header("Authorization", 'Bearer').request.rawHeaders
+      const findAuthorization: number = authorization.indexOf('Authorization') + 1
+      const validHeader: boolean = authorization[findAuthorization].split(' ')[0] === 'Bearer' && authorization[findAuthorization].split(' ').length === 2
+      const token: string = authorization[findAuthorization].split(' ')[1]
+      const tokenOK: boolean = validAccount.tokentmp === token
 
+      if (validHeader && tokenOK && validAccount.tokentmp !== null) {
+        const newName: string = body.name !== validAccount.name ? body.name : validAccount.name
+        const newPass: string = body.password !== validAccount.password ? body.password : validAccount.password
+        const newEmail: string = body.email !== validAccount.email ? body.email : validAccount.email
+        const newNameExist: boolean = await Accounts.findBy('name', newName) !== null && newName !== validAccount.name
+        const newEmailExiste: boolean = await Accounts.findBy('email', newEmail) !== null && newEmail !== validAccount.email
+
+        if (newPass === '' || newName === '') {
+          response.status(401)
+          return{
+            status: 401,
+            msg: 'Nome ou Senha não podem estar vazios.'
+          }
+        } if (newNameExist || newEmailExiste && newEmail !== '') {
+          response.status(401)
+          return {
+            status: 401,
+            msg: "Este Nome ou Email já está cadastrado."
+          }
+        } else {
+          await Accounts.updateOrCreate({
+            "id": params.id
+          }, {
+            "name": newName,
+            "password": newPass,
+            "email": newEmail
+          })
+          return {
+            "status": 200,
+            "name": newName,
+            "password": newPass,
+            "email": newEmail,
+            "ip": validAccount.ip,
+            "vip": validAccount.vip,
+            "viptime": validAccount.viptime
+          }
+        }
+
+      }
+    }
 }

@@ -27,5 +27,6 @@ Route.group(()=>{
   Route.post('/login', 'AccountsController.login')
   Route.post('/register', 'AccountsController.register')
   Route.get('/users/:id', 'AccountsController.show')
+  Route.post('/users/:id', 'AccountsController.update')
   // Route.resource('/login', 'AccountsController.store').apiOnly()
 }).prefix('/api')
