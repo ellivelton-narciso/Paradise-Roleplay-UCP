@@ -4,9 +4,9 @@ import Accounts from "App/Models/Accounts";
 export default class AccountsController {
     public async login({request, response}: HttpContextContract) {
       const body = request.body()
-      const name  =  body.name
-      const password = body.password
-      const accountExist = await Accounts.findBy('name', name)
+      const name: string  =  body.name
+      const password: string = body.password
+      const accountExist: Accounts | null = await Accounts.findBy('name', name)
 
       if (!name || !password) {
         response.status(400)
@@ -66,12 +66,12 @@ export default class AccountsController {
 
     public async register({ request, response}: HttpContextContract) {
       const body = request.body()
-      const name = body.name
-      const password = body.password
-      const email = body.email ? body.email : ''
-      const ip = body.ip ? body.ip : ''
-      const accountExist = await Accounts.findBy('name', name)
-      const emailExist = await Accounts.findBy('email', email)
+      const name: string = body.name
+      const password: string = body.password
+      const email: string = body.email ? body.email : ''
+      const ip: string = body.ip ? body.ip : ''
+      const accountExist: Accounts | null = await Accounts.findBy('name', name)
+      const emailExist: Accounts | null = await Accounts.findBy('email', email)
 
      if(!name || !password) {
        response.status(400)
@@ -106,15 +106,34 @@ export default class AccountsController {
      }
     }
 
-    public async show({params}: HttpContextContract) {
-      const accountsExist = await Accounts.findOrFail(params.id)
+    public async show({params, response}: HttpContextContract) {
+      const accountExist: Accounts = await Accounts.findOrFail(params.id)
+      const authorization: string[] = response.header("Authorization", 'Bearer').request.rawHeaders
+      const findAuthorization: number = authorization.indexOf('Authorization') + 1
+      const validHeader: boolean = authorization[findAuthorization].split(' ')[0] === 'Bearer' && authorization[findAuthorization].split(' ').length === 2
+      const token: string = authorization[findAuthorization].split(' ')[1]
+      const tokenOK: boolean = accountExist.tokentmp === token
 
-
-      return {
-        "name": accountsExist.name,
-        "password": accountsExist.password,
-        "email": accountsExist.email,
-        "ip": accountsExist.ip,
+      if (validHeader && tokenOK && accountExist.tokentmp !== null) {
+        return {
+          "status": 200,
+          "name": accountExist.name,
+          "password": accountExist.password,
+          "email": accountExist.email,
+          "ip": accountExist.ip,
+        }
+      } else {
+        await Accounts.updateOrCreate({
+          "id": accountExist.id,
+        }, {
+          "tokentmp": ''
+        })
+        return {
+          status: 401,
+          msg: 'Não autorizado, token invalido ou expirado.'
+        }
       }
     }
+
+
 }
