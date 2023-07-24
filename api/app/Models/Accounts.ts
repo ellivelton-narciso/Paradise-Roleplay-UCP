@@ -8,7 +8,7 @@ export default class Accounts extends BaseModel {
   @column()
   public name: string
 
-  @column()
+  @column({ serializeAs: null })
   public password: string
 
   @column()
@@ -31,9 +31,6 @@ export default class Accounts extends BaseModel {
 
   @column()
   public viptime: number
-
-  @column()
-  public tokentmp: string
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime

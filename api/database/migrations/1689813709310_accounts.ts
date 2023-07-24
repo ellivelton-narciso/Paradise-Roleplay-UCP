@@ -16,13 +16,11 @@ export default class extends BaseSchema {
         table.integer('character2')
         table.integer('vip')
         table.integer('viptime')
-        table.string('tokentmp')
         table.timestamp('created_at', { useTz: true })
         table.timestamp('updated_at', { useTz: true })
       })
     } else {
       this.schema.alterTable(this.tableName, (table)=> {
-        table.string('tokentmp')
         table.timestamp('created_at', { useTz: true })
         table.timestamp('updated_at', { useTz: true })
       })

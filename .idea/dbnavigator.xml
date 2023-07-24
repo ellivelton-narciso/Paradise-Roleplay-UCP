@@ -13,7 +13,7 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="8f1cd291-71e5-410f-a09c-ef1f97c175cb">
-      <console name="Paradise" type="STANDARD" schema="" session="Main" />
+      <console name="Paradise" type="STANDARD" schema="main" session="Main"><![CDATA[select]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -23,6 +23,7 @@
     <open-files />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.api_tokens" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.accounts" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
@@ -48,7 +49,7 @@
           <tns-folder value="" />
           <tns-profile value="" />
           <files>
-            <file path="C:\Users\Ellivelton\Documents\GitHub\NodeJS\PA\backend\api\tmp\database.db" schema="main" />
+            <file path="C:\Users\Ellivelton\Documents\GitHub\PA\backend\api\tmp\database.db" schema="main" />
           </files>
           <type value="NONE" />
           <user value="" />
@@ -516,5 +517,8 @@
         </visibility-settings>
       </environment>
     </general-settings>
+  </component>
+  <component name="DBNavigator.Project.StatementExecutionManager">
+    <execution-variables />
   </component>
 </project>
