@@ -17,14 +17,18 @@
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
-    <last-used-providers />
+    <last-used-providers>
+      <object-type object-type="TABLE" editor-provider="DATA" />
+    </last-used-providers>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.characters" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.api_tokens" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.accounts" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.aplicacoes" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
     <last-used-operator value="EQUAL" />

@@ -31,7 +31,7 @@ export default class extends BaseSchema {
         table.integer('thirst')
         table.string('rg')
         table.string('cpf')
-        table.string('cng')
+        table.string('cnh')
         table.integer('spawn')
         table.integer('noobchat')
         table.integer('fight')

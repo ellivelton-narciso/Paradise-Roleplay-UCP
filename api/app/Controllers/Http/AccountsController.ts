@@ -36,6 +36,7 @@ export default class AccountsController {
         return response.status(200).json({
           "userId": token.userId,
           "user": user.name,
+          "admin": user.admin,
           "character0": user.character0,
           "character1": user.character1,
           "character2": user.character2,
@@ -76,7 +77,7 @@ export default class AccountsController {
          msg: "Um ou mais campos está incompleto!"
        })
 
-     } if (!accountExist || !emailExist && email !== ''){
+     } if (accountExist || emailExist && email !== ''){
 
         return response.status(400).json({
           status: 400,
@@ -88,11 +89,12 @@ export default class AccountsController {
          "password": password,
          "email": email,
          "ip": ip,
-         character0: -1,
-         character1: -1,
-         character2: -1,
-         vip: 0,
-         viptime: 0,
+         "character0": -1,
+         "character1": -1,
+         "character2": -1,
+         "vip": 0,
+         "viptime": 0,
+         "saldo": 0
        })
 
        return response.status(201).json({
@@ -140,6 +142,38 @@ export default class AccountsController {
           msg: 'Não autorizado, token invalido ou expirado.'
         }
       }
+    }
+
+    public async showAll(response: HttpContextContract) {
+      const authorization: string[] = response.response.header("Authorization", 'Bearer').request.rawHeaders
+      const findAuthorization: number = authorization.indexOf('Authorization') + 1
+      const validHeader: boolean = authorization[findAuthorization].split(' ')[0] === 'Bearer' && authorization[findAuthorization].split(' ').length === 2
+      const tokenBody: string = authorization[findAuthorization].split(' ')[1]
+      const user: number | boolean = await ApiToken.findBy('token', tokenBody).then(data => {
+        if (data) {
+          return data.userId
+        } else {
+          return false
+        }
+      })
+      const tokenOK: boolean = await Accounts.findBy('id', user).then(res => {
+        if (!res) {
+          return false
+        }
+        return res.admin === 1;
+      })
+
+      if (validHeader && tokenOK) {
+        const contas = await Accounts.all()
+        return response.response.status(200).json({
+          status: 200,
+          contas
+        })
+      }
+      return response.response.status(401).json({
+        status: 401,
+        msg: 'Sem permissão ou token está inválido.'
+      })
     }
 
     public async update({params, request, response}: HttpContextContract) {
