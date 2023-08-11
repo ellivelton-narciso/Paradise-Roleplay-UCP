@@ -2,12 +2,14 @@ import type {HttpContextContract} from '@ioc:Adonis/Core/HttpContext'
 import Character from "App/Models/Character";
 import Accounts from "App/Models/Accounts";
 import ApiToken from "App/Models/ApiToken";
+import Aplicacoes from "App/Models/Aplicacoe";
 
 export default class CharactersController {
   public async index({params, response}: HttpContextContract) {
     const user: Accounts | null = await Accounts.findBy('id', params.id)
     if(user) {
       const charactersConnect = await Character.findMany([user.character0, user.character1, user.character2])
+      const aplicacoes = await Aplicacoes.query().where('user_id', params.id)
       const authorization: string[] = response.header("Authorization", 'Bearer').request.rawHeaders
       const findAuthorization: number = authorization.indexOf('Authorization') + 1
       const validHeader: boolean = authorization[findAuthorization].split(' ')[0] === 'Bearer' && authorization[findAuthorization].split(' ').length === 2
@@ -25,7 +27,8 @@ export default class CharactersController {
 
         return response.status(200).json({
           "status": 200,
-          "personagens": charactersConnect
+          "personagens": charactersConnect,
+          "aplicacoes": aplicacoes.length
         })
       } else {
         //LEMBRAR: Deletar o Token ao errar
@@ -35,13 +38,13 @@ export default class CharactersController {
           "tokentmp": ''
         })*/
 
-        return response.status(401).json({
+        return response.status(200).json({
           status: 401,
           msg: 'Não autorizado, token invalido ou expirado.'
         })
       }
     } else {
-      return response.status(401).json({
+      return response.status(200).json({
         status: 401,
         msg: 'ID inválido.'
       })

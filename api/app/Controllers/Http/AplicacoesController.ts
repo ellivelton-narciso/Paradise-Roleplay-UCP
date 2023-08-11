@@ -10,6 +10,7 @@ import Database from "@ioc:Adonis/Lucid/Database";
 export default class AplicacoesController {
   public async register ({params, request, response}: HttpContextContract) {
     const body = request.body()
+    const idEdita: number = body.idEdita
     const nome: string = body.nome
     const sobrenome: string = body.sobrenome
     const nascimento: string = body.nascimento
@@ -18,30 +19,39 @@ export default class AplicacoesController {
     const historia: string = body.historia
     // const {nome, sobrenome, nascimento, origem, sexo, historia} = request.only(['nome', 'sobrenome', 'nascimento', 'origem', 'sexo', 'historia'])
     const user : Accounts | null = await Accounts.findBy('id', params.id)
-    const nomePersonagem: string | boolean = await Character.findBy('name', nome+`_`+sobrenome).then(res => {
-      if(!res) {
-        return nome+`_`+sobrenome
-      } else {
-        return false
-      }
-    })
-
     if(!user) {
       return response.status(403).json({
         status: 403,
         msg: 'Usuário não encontrado'
       })
     }
+    const aplicacoes = await Aplicacoes.query().where('user_id', user.id)
+    const nomePersonagem: string | boolean = await Character.findBy('name', nome+`_`+sobrenome).then(res => {
+      if(!res) {
+        return nome+`_`+sobrenome
+      } else {
+        if (res.id === user.character0 || res.id === user.character1 || res.id === user.character2) {
+          return nome+`_`+sobrenome
+        }
+        return false
+      }
+    })
     if(historia.length > 3000) {
-      return response.status(403).json({
+      return response.status(200).json({
         status: 403,
         msg: 'Conteúdo historia muito grande. (Limite 3000 caracteres.)'
       })
     }
     if(!nomePersonagem) {
-      return response.status(403).json({
+      return response.status(200).json({
         status: 403,
         msg: 'Nome Personagem já existente.'
+      })
+    }
+    if ( aplicacoes.filter(filtro => filtro.status !== 0).length >= 3) {
+      return response.status(200).json({
+        status: 403,
+        msg: 'Você já possui 3 aplicações de personagens, verifique se possui alguma aplicação que já foi aceita, negada ou que não foi visualizada.'
       })
     }
 
@@ -60,10 +70,38 @@ export default class AplicacoesController {
       const tokenOK: boolean = tokenDB ? tokenBody === tokenDB : false
 
       if(!validHeader || !tokenOK) {
-        return response.status(401).json({
+        return response.status(200).json({
           status: 401,
           msg: 'Token Inválido'
         })
+      }
+      if (idEdita !== undefined) {
+        const aplicacaoEdita: Aplicacoes | null = await Database.from('aplicacoes').where('id', idEdita).first()
+        if (aplicacaoEdita !== null) {
+          try {
+            await Aplicacoes.updateOrCreate({
+              "id": idEdita
+            },{
+              "status": -1,
+              "nome": nome,
+              "sobrenome": sobrenome,
+              "nascimento": nascimento,
+              "origem": origem,
+              "sexo": sexo,
+              "historia": historia
+            })
+            return response.status(201).json({
+              status: 201,
+              msg: 'Aplicação enviada, aguarde aprovação.'
+            })
+          } catch (error) {
+            return response.status(200).json({
+              status: 500,
+              msg: 'Erro ao criar aplicação no banco de dados.',
+              erro: error
+            })
+          }
+        }
       }
 
       const aplicacaoExistente: Aplicacoes | null = await Database.from('aplicacoes').where('nome', nome).where('sobrenome', sobrenome).first()
@@ -83,7 +121,7 @@ export default class AplicacoesController {
             msg: 'Aplicação enviada, aguarde aprovação.'
           })
         } catch (error) {
-          return response.status(500).json({
+          return response.status(200).json({
             status: 500,
             msg: 'Erro ao criar aplicação no banco de dados.',
             erro: error
@@ -108,22 +146,22 @@ export default class AplicacoesController {
         })
       }
       if(aplicacaoExistente.user_id != params.id) {
-        return response.status(403).json({
+        return response.status(200).json({
           status: 403,
           msg: 'Já existe uma aplicação com o mesmo nome e sobrenome.'
         })
       }
 
     } catch (error) {
-      return response.status(500).json({
+      return response.status(200).json({
         status: 500,
-        msg: 'Erro Interno foi aqui.',
+        msg: 'Erro ao criar aplicação no banco de dados.',
         erro: error
       })
     }
   }
 
-  public async show(response: HttpContextContract) {
+  public async showAll(response: HttpContextContract) {
     const authorization: string[] = response.response.header("Authorization", 'Bearer').request.rawHeaders
     const findAuthorization: number = authorization.indexOf('Authorization') + 1
     const validHeader: boolean = authorization[findAuthorization].split(' ')[0] === 'Bearer' && authorization[findAuthorization].split(' ').length === 2
@@ -155,6 +193,78 @@ export default class AplicacoesController {
     })
   }
 
+  public async showUser({params, response}: HttpContextContract) {
+    const user: Accounts | null = await Accounts.findOrFail(params.id)
+    const authorization: string[] = response.header("Authorization", 'Bearer').request.rawHeaders
+    const findAuthorization: number = authorization.indexOf('Authorization') + 1
+    const validHeader: boolean = authorization[findAuthorization].split(' ')[0] === 'Bearer' && authorization[findAuthorization].split(' ').length === 2
+    const tokenBody: string = authorization[findAuthorization].split(' ')[1]
+    const tokenDB: string | boolean = await ApiToken.findBy('user_id', user.id).then(data => {
+      if (data) {
+        return data.token
+      } else {
+        return false
+      }
+    })
+    const tokenOK: boolean = tokenDB ? tokenBody === tokenDB : false
+    if (validHeader && tokenOK) {
+      const aplicacao = await Aplicacoes.query().where('user_id', params.id);
+      return response.status(200).json({
+        status: 200,
+        aplicacoes: aplicacao
+      })
+    }
+    return response.status(200).json({
+      status: 404,
+      msg: 'Token Inválido ou expirado.'
+    })
+  }
+
+  public async show({params, response}: HttpContextContract) {
+    const aplicacao: Aplicacoes | null = await Aplicacoes.findBy('id', params.id)
+    if (aplicacao !== null) {
+      const user: Accounts | null = await Accounts.findBy('id', aplicacao.user_id)
+      if (user !== null) {
+        const authorization: string[] = response.header("Authorization", 'Bearer').request.rawHeaders
+        const findAuthorization: number = authorization.indexOf('Authorization') + 1
+        const validHeader: boolean = authorization[findAuthorization].split(' ')[0] === 'Bearer' && authorization[findAuthorization].split(' ').length === 2
+        const tokenBody: string = authorization[findAuthorization].split(' ')[1]
+        const tokenDB: string | boolean = await ApiToken.findBy('user_id', user.id).then(data => {
+          if (data) {
+            return data.token
+          } else {
+            return false
+          }
+        })
+        const tokenOK: boolean = tokenDB ? tokenBody === tokenDB : false
+        if (validHeader && tokenOK) {
+          return response.status(200).json({
+            status: 200,
+            aplicacao
+          })
+        } else {
+          return response.status(200).json({
+            status: 404,
+            msg: 'Token inválido ou expirado.'
+          })
+        }
+
+      } else {
+        return response.status(404).json({
+          status: 404,
+          msg: 'Usuário não encontrado.'
+        })
+      }
+
+    } else {
+      return response.status(200).json({
+        status: 400,
+        msg: 'Não possui aplicações..'
+      })
+    }
+
+  }
+
   public async update({params, request, response}: HttpContextContract) {
     const {idAdm, status, resposta} = request.only(['idAdm', 'status', 'resposta'])
     const aplicacao: Aplicacoes | null = await Aplicacoes.findBy('id', params.id)
@@ -168,19 +278,19 @@ export default class AplicacoesController {
       return res
     })
     if(!aplicacao) {
-      return response.status(404).json({
+      return response.status(200).json({
         status: 404,
         msg: 'Aplicacação não encontrada.'
       })
     }
     if (aplicacao.status === 1 || aplicacao.status === 0) {
-      return response.status(400).json({
+      return response.status(200).json({
         status: 400,
         msg: 'Aplicação ja foi avaliada, atualize a página, caso persista esse erro contacte o desenvolvedor.'
       })
     }
     if (!userAdm) {
-      return response.status(403).json({
+      return response.status(200).json({
         status: 403,
         msg: 'Usuário administrador não encontrado'
       })
@@ -201,7 +311,7 @@ export default class AplicacoesController {
       const jaAprovado: Character | null = await Character.findBy('name', aplicacao.nome+`_`+aplicacao.sobrenome)
       const solicitante: Accounts | null = await Accounts.findBy('id', aplicacao.user_id)
       if (!solicitante) {
-        return response.status(404).json({
+        return response.status(20).json({
           status: 404,
           msg: 'Dono da aplicação não encontrado no banco de dados, renicie a página ou contacte o desenvolvedor.'
         })
@@ -210,7 +320,7 @@ export default class AplicacoesController {
 
       // Valida se o Token do administrador é válido e se ele realmente é um administrador
       if(!validHeader || !tokenOK) {
-        return response.status(401).json({
+        return response.status(200).json({
           status: 401,
           msg: 'Token Inválido'
         })
@@ -222,24 +332,14 @@ export default class AplicacoesController {
          que teoricamente aplicou, irá verificar qual slot o mesmo faz parte, se não fizer parte de nenhum slot, então o mesmo faz parte
          de outro slot.
        */
-      if (jaAprovado !== null) {
+      if (jaAprovado !== null && aplicacao.status === 1) {
         if (userPersonagens.filter(filtro => filtro === jaAprovado.id).length > 0) {
-          await Aplicacoes.updateOrCreate({
-            "id": params.id
-          }, {
-            "status": 1
-          })
           return response.status(200).json({
             status: 200,
             msg: 'Personagem já está cadastrado para este usuário'
           })
         } else {
-          await Aplicacoes.updateOrCreate({
-            "id": params.id
-          }, {
-            "status": 1
-          })
-          return response.status(500).json({
+          return response.status(200).json({
             status: 500,
             msg: 'Personagem já está cadastrado para outro usuário, contacte o desenvolvedor.'
           })
@@ -249,51 +349,76 @@ export default class AplicacoesController {
       switch (status) {
         case 1:
           try {
+            const rgRandom: string | null = await this.generatergcpf('rg')
+            const cpfRandom: string | null = await this.generatergcpf('cpf')
+
+            if (rgRandom === null || cpfRandom === null) {
+              return response.status(200).json({
+                status: 404,
+                msg: 'Ocorreu um erro ao gerar RG/CPF. Caso o erro persista, contacte um desenvolvedor.'
+              })
+            }
             await Aplicacoes.updateOrCreate({
               "id": params.id
             }, {
-              "status": status
+              "status": status,
+              "mensagem": resposta
             })
-            await Character.create({
-              name: aplicacao.nome+`_`+aplicacao.sobrenome,
-              admin: 0,
-              money: 750,
-              skin: 67,
-              payday: 3600,
-              level: 1,
-              xp: 0,
-              job: 0,
-              sex: aplicacao.sexo,
-              birthday: aplicacao.nascimento,
-              posx: 0,
-              posy: 0,
-              posz: 0,
-              posa: 0,
-              interior: 0,
-              interiorvw: 0,
-              house: -1,
-              business: -1,
-              entrance: -1,
-              blocked: 0,
-              hunger: 100,
-              thirst: 100,
-              rg: '',
-              cpf: '',
-              cnh: '',
-              spawn: 0,
-              noobchat: 1,
-              fight: 4,
-              faction: 0,
-              office: 0,
-              phone: -1,
-              chip_1: 0,
-              chip_2: 0,
-              health: 100.0,
-              armour: 0.0
-            })
+            if (jaAprovado) {
+              return response.status(200).json({
+                status: 201,
+                msg: 'Personagem criado antes da UCP aprovado na whitelist.'
+              })
+            }
+            try {
+              await Character.create({
+                name: aplicacao.nome+`_`+aplicacao.sobrenome,
+                money: 750,
+                skin: 67,
+                payday: 3600,
+                level: 1,
+                xp: 0,
+                job: 0,
+                sex: aplicacao.sexo,
+                birthday: aplicacao.nascimento,
+                posx: 0,
+                posy: 0,
+                posz: 0,
+                posa: 0,
+                interior: 0,
+                interiorvw: 0,
+                house: -1,
+                business: -1,
+                entrance: -1,
+                blocked: 0,
+                hunger: 100,
+                thirst: 100,
+                rg: rgRandom,
+                cpf: cpfRandom,
+                cnh: '',
+                spawn: 0,
+                noobchat: 1,
+                sayanim: 1,
+                fight: 4,
+                faction: 0,
+                office: 0,
+                phone: -1,
+                chip_1: 0,
+                chip_2: 0,
+                health: 100.0,
+                armour: 0.0,
+                life_state: 0
+              })
+            } catch (e) {
+              return response.status(200).json({
+                status: 404,
+                msg: 'Erro ao criar personagem.',
+                erro: e
+              })
+            }
             const novoPersonagem: Character | null = await Character.findBy('name', aplicacao.nome+`_`+aplicacao.sobrenome)
             if (!novoPersonagem) {
-              return response.status(404).json({
+              return response.status(200).json({
                 status: 404,
                 msg: 'Novo Personagem não encontrado.'
               })
@@ -309,21 +434,21 @@ export default class AplicacoesController {
                 })
               }
               await novoPersonagem.delete()
-              return response.status(403).json({
+              return response.status(200).json({
                 status: 403,
                 msg: 'Conta já tem 3 personagens.'
               })
             }
             catch (error) {
               await novoPersonagem.delete()
-              return response.status(500).json({
+              return response.status(200).json({
                 status: 500,
                 msg: 'Erro Interno',
                 erro: error
               })
             }
           } catch (error) {
-            return response.status(500).json({
+            return response.status(200).json({
               status: 500,
               msg: 'Erro interno ao criar personagem.',
               erro: error
@@ -334,32 +459,28 @@ export default class AplicacoesController {
             await Aplicacoes.updateOrCreate({
               "id": params.id
             }, {
-              "status": status
-            })
-            await Aplicacoes.updateOrCreate({
-              "id": params.id
-            }, {
+              "status": status,
               "mensagem": resposta
             })
-            return response.status(201).json({
+            return response.status(200).json({
               status: 201,
               msg: 'Aplicação negada, e a mensagem foi enviada ao usuário.'
             })
           } catch (error) {
-            return response.status(500).json({
+            return response.status(200).json({
               status: 500,
               msg: 'Erro Interno.',
               erro: error
             })
           }
         default:
-          return response.status(400).json({
+          return response.status(200).json({
             status: 400,
             msg: 'status só pode ser 0 ou 1, sendo 0 = reprovado e 1 = aprovado.'
           })
       }
     } catch (error) {
-      return response.status(500).json({
+      return response.status(200).json({
         status: 500,
         msg: 'Erro Interno.',
         erro: error
@@ -367,4 +488,47 @@ export default class AplicacoesController {
     }
 
   }
+
+  private gerarNumerosAleatoriosString(max: number): string {
+    try {
+      let numerosAleatorios = '';
+      for (let i = 0; i < max; i++) {
+        const numeroInteiroAleatorio = Math.floor(Math.random() * 10);
+        numerosAleatorios += numeroInteiroAleatorio.toString();
+      }
+      return numerosAleatorios;
+    } catch (error) {
+      console.error('Ocorreu um erro ao gerar números aleatórios:', error);
+      return '';
+    }
+  }
+
+  private async generatergcpf(rgcpf: string): Promise<string | null> {
+    try {
+      switch (rgcpf) {
+        case 'rg':
+          let newRG: string = this.gerarNumerosAleatoriosString(9);
+          let checkRG: Character | null = await Character.findBy('rg', newRG);
+          while (checkRG !== null) {
+            newRG = this.gerarNumerosAleatoriosString(9);
+            checkRG = await Character.findBy('rg', newRG);
+          }
+          return newRG;
+        case 'cpf':
+          let newCPF: string = this.gerarNumerosAleatoriosString(11);
+          let checkCPF: Character | null = await Character.findBy('cpf', newCPF);
+          while (checkCPF !== null) {
+            newCPF = this.gerarNumerosAleatoriosString(11);
+            checkCPF = await Character.findBy('cpf', newCPF);
+          }
+          return newCPF;
+        default:
+          return null;
+      }
+    } catch (error) {
+      console.error('Ocorreu um erro ao gerar RG/CPF:', error);
+      return null;
+    }
+  }
+
 }

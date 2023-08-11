@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <script src="assets/vendor/Jquery/jquery-3.6.0.min.js"></script>
+    <script src="assets/js/init.js"></script>
+    <script>
+        verificaLogado().then((isLoggedIn) => {
+            if(!isLoggedIn) {
+                logout()
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Paradise Roleplay</title>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="assets/vendor/Bootstrap5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/main.css" >
+</head>
+<body class="bg-dark">
+    <nav id="navBar" class="navbar navbar-expand-lg navbar-dark bg-dark"></nav>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 bg-white p-4 rounded">
+                <h2 class="mb-4 text-center">Cadastrar Novo Personagem</h2>
+                <div class="alert alert-warning">
+                    <strong>Aviso:</strong> O servidor se passa em uma cidade fictícia do estado de São Paulo, portanto, todos os dados devem ser fictícios. Sendo assim você também poderá colocar "Los Santos, São Paulo" como local de nascimento caso queira retratar que seu personagem tenha nascido na mesma cidade em que o servidor se passa.
+                </div>
+                <form method="post">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nome" class="form-label">Nome:</label>
+                            <input type="text" id="nome" name="nome" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="sobrenome" class="form-label">Sobrenome:</label>
+                            <input type="text" id="sobrenome" name="sobrenome" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="data_nascimento" class="form-label">Data de Nascimento:</label>
+                            <input type="date" id="data_nascimento" name="data_nascimento" class="form-control" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Gênero:</label>
+                            <select id="genero" name="genero" class="form-control" required>
+                                <option value="1">Masculino</option>
+                                <option value="2">Feminino</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="local_nascimento" class="form-label">Local de Nascimento:</label>
+                        <input type="text" id="local_nascimento" name="local_nascimento" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="historia" class="form-label">História (máximo 3000 caracteres):</label>
+                        <textarea id="historia" name="historia" rows="6" maxlength="3000" class="form-control" required></textarea>
+                    </div>
+                    <div id="erroAlert" class="alert alert-danger visually-hidden"></div>
+                    <div id="editBtn" class="text-center mt-3">
+                        <a href="todas_aplicacoes.html" class="btn btn-primary">Voltar</a>
+                        <button id="enviarAplicacao" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <footer class="footer py-3 bg-dark text-white"></footer>
+</body>
+<script src="assets/js/core.min.js"></script>
+<script src="assets/vendor/sweetalret/sweetalert.min.js"></script>
+<script src="assets/vendor/Bootstrap5/js/bootstrap.js"></script>
+<script src="assets/vendor/Bootstrap5/js/bootstrap.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/08478c52c1.js" crossorigin="anonymous"></script>
+<script src="assets/js/main.js" type="module"></script>
+<script src="assets/js/nova-aplicacao.js"></script>
+</html>

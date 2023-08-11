@@ -38,6 +38,7 @@ const databaseConfig: DatabaseConfig = {
       client: 'sqlite',
       connection: {
         filename: Application.tmpPath('database.db'),
+        // filename: 'tmp/database.db',
       },
       pool: {
         afterCreate: (conn, cb) => {

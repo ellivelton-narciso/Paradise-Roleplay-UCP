@@ -22,6 +22,6 @@ export default class ApiToken extends BaseModel {
   public created_at: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
-  public expiresAt: DateTime | null
+  public expiresAt: DateTime
 
 }

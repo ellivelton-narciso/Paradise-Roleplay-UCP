@@ -12,8 +12,8 @@ export default class CreateApiTokens extends BaseSchema {
       table.string('name', 255)
       table.string('type', 80).notNullable()
       table.string('token', 500).notNullable().unique()
-      table.timestamp('expires_at').nullable()
-      table.timestamp('created_at', { useTz: true }).nullable()
+      table.timestamp('expires_at').notNullable()
+      table.timestamp('created_at', { useTz: true }).notNullable()
     })
 
   }
