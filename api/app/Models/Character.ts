@@ -7,8 +7,6 @@ export default class Character extends BaseModel {
   @column()
   public name: string
 
-  @column()
-  public admin: number
 
   @column()
   public money: number
@@ -86,6 +84,9 @@ export default class Character extends BaseModel {
   public noobchat: number
 
   @column()
+  public sayanim: number
+
+  @column()
   public fight: number
 
   @column()
@@ -108,4 +109,7 @@ export default class Character extends BaseModel {
 
   @column()
   public armour: number
+
+  @column()
+  public life_state: number
 }

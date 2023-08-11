@@ -8,7 +8,6 @@ export default class extends BaseSchema {
       this.schema.createTable(this.tableName, (table) => {
         table.increments('id')
         table.string('name')
-        table.integer('admin')
         table.integer('money')
         table.integer('skin')
         table.integer('payday')
@@ -34,6 +33,7 @@ export default class extends BaseSchema {
         table.string('cnh')
         table.integer('spawn')
         table.integer('noobchat')
+        table.integer('sayanim')
         table.integer('fight')
         table.integer('faction')
         table.integer('office')
@@ -42,6 +42,7 @@ export default class extends BaseSchema {
         table.integer('chip_2')
         table.integer('health')
         table.integer('armour')
+        table.integer('life_state')
       })
     }
 
