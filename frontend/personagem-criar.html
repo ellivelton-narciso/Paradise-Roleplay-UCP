@@ -3,15 +3,7 @@
 <head>
     <script src="assets/vendor/Jquery/jquery-3.6.0.min.js"></script>
     <script src="assets/js/init.js"></script>
-    <script>
-        verificaLogado().then((isLoggedIn) => {
-            if(!isLoggedIn) {
-                logout()
-            }
-        }).catch((error) => {
-            console.error(error);
-        });
-    </script>
+    <script src="assets/js/validaLogin.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -84,5 +76,5 @@
 <script src="assets/vendor/Bootstrap5/js/bootstrap.bundle.min.js"></script>
 <script src="https://kit.fontawesome.com/08478c52c1.js" crossorigin="anonymous"></script>
 <script src="assets/js/main.js" type="module"></script>
-<script src="assets/js/nova-aplicacao.js"></script>
+<script src="assets/js/pages/nova-aplicacao.js"></script>
 </html>

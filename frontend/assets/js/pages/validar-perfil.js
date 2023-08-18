@@ -63,7 +63,7 @@ const popularInputs = () => {
             swal.close();
             if (res.status === 200) {
                 $('#username').val(res.name);
-                if (res.email === undefined) {
+                if (res.email === 'Undefined') {
                     $('#email').val('');
                 } else {
                     $('#email').val(res.email);

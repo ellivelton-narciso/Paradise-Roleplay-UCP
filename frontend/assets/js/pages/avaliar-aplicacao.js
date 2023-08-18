@@ -67,11 +67,8 @@ const avaliarAplicacao = (status) => {
                     erroAlert.classList.remove('alert-danger')
                     erroAlert.classList.add('alert-success')
                     return;
-                case 401:
-                    logout()
-                    return;
                 default:
-
+                    logout()
                     return;
             }
         }
