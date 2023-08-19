@@ -242,12 +242,12 @@ export default class AccountsController {
         const newEmailExiste = newEmailFind !== null && newEmail !== user.email
 
         if (newPass === '' || newName === '') {
-          return response.status(401).json({
+          return response.status(200).json({
             status: 401,
             msg: 'Nome ou Senha não podem estar vazios.'
           })
         } if (newNameExist || newEmailExiste && newEmail !== '') {
-          return response.status(401).json({
+          return response.status(200).json({
             status: 401,
             msg: "Este Nome ou Email já está cadastrado."
           })
@@ -271,6 +271,10 @@ export default class AccountsController {
         }
 
       }
+      return response.status(200).json({
+        status: 404,
+        msg: 'Token inválido ou expirado.'
+      })
     }
 
     public async isAdmin({response}: HttpContextContract) {
@@ -298,6 +302,78 @@ export default class AccountsController {
       })
 
 
+    }
+
+    public async updateAdmin({params, request, response} : HttpContextContract) {
+      const body = request.body()
+      const user: Accounts | null = await Accounts.findBy('id', params.id)
+      if (!user) {
+        return response.status(404).json({
+          status: 404,
+          msg: 'Usuário não encontrado'
+        })
+      }
+      const authorization: string[] = response.header("Authorization", 'Bearer').request.rawHeaders
+      const findAuthorization: number = authorization.indexOf('Authorization') + 1
+      const validHeader: boolean = authorization[findAuthorization].split(' ')[0] === 'Bearer' && authorization[findAuthorization].split(' ').length === 2
+      const tokenBody: string = authorization[findAuthorization].split(' ')[1]
+      const userAdmin: number | boolean = await ApiToken.findBy('token', tokenBody).then(data => {
+        if (data) {
+          return data.userId
+        } else {
+          return false
+        }
+      })
+      const tokenOK: boolean = await Accounts.findBy('id', userAdmin).then(res => {
+        if (!res) {
+          return false
+        }
+        return res.admin === 1;
+      })
+
+      if (validHeader && tokenOK) {
+        const newName: string = body.name !== user.name ? body.name : user.name
+        const newPass: string = body.password === undefined || body.password === user.password ? user.password : body.password
+        const newEmail: string = body.email === user.email || body.email === null || body.email === undefined ? user.email : body.email
+        const newNameFind = await Accounts.findBy('name', newName)
+        const newNameExist = newNameFind !== null && newName !== user.name
+        const newEmailFind = await Accounts.findBy('email', newEmail)
+        const newEmailExiste = newEmailFind !== null && newEmail !== user.email
+
+        if (newPass === '' || newName === '') {
+          return response.status(200).json({
+            status: 401,
+            msg: 'Nome ou Senha não podem estar vazios.'
+          })
+        }
+        if (newNameExist || newEmailExiste && newEmail !== '') {
+          return response.status(200).json({
+            status: 401,
+            msg: "Este Nome ou Email já está cadastrado."
+          })
+        } else {
+          console.log(newEmail)
+          await Accounts.updateOrCreate({
+            "id": params.id
+          }, {
+            "name": newName,
+            "password": newPass,
+            "email": newEmail,
+            "vip": body.vip,
+            "viptime": body.viptime,
+            "admin": body.admin
+          })
+          return response.status(200).json({
+            "status": 200,
+            "msg": 'Alterado com sucesso'
+          })
+
+        }
+      }
+      return response.status(200).json({
+        status: 404,
+        msg: 'Token inválido ou não é um administrador.'
+      })
     }
 
     public async isValid({response}: HttpContextContract) {

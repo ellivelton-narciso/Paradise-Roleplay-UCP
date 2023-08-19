@@ -29,6 +29,7 @@ Route.group(()=>{
   Route.get('/users', 'AccountsController.showAll')
   Route.get('/users/:id', 'AccountsController.show')
   Route.post('/users/:id', 'AccountsController.update')
+  Route.post('/admin/users/:id', 'AccountsController.updateAdmin')
   Route.get('/isadmin', 'AccountsController.isAdmin')
   Route.get('/isValid', 'AccountsController.isValid')
   Route.get('/characters/:id', 'CharactersController.index')
