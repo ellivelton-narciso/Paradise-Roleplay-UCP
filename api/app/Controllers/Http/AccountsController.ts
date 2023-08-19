@@ -352,7 +352,6 @@ export default class AccountsController {
             msg: "Este Nome ou Email já está cadastrado."
           })
         } else {
-          console.log(newEmail)
           await Accounts.updateOrCreate({
             "id": params.id
           }, {
@@ -404,7 +403,6 @@ export default class AccountsController {
           isLogged: validHeader && tokenOK
         })
       } catch (error) {
-        console.log(error)
         return response.status(200).json({
           status: 200,
           isLogged: false
