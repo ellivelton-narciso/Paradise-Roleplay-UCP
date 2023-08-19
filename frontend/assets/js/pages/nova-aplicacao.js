@@ -106,9 +106,9 @@ const novaAplicacao =  () => {
 
     if (
         dtNascDate.toString() === "Invalid Date" ||
-        dtNascDate > today
+        dtNascDate > today || dtNascDate < new Date("1900-01-01")
     ) {
-        erroAlert.text("A Data de Nascimento não é válida ou não pode ser posterior ao dia atual (formato correto: dd/mm/aa).");
+        erroAlert.text("A Data de Nascimento não é válida ou não pode ser posterior ao dia atual nem inferior a 01/01/1900 (formato correto: dd/mm/aa).");
         erroAlert.removeClass("visually-hidden");
         dataNascimentoInput.addClass("is-invalid");
         return;
