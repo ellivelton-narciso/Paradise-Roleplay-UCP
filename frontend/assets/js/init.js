@@ -1,4 +1,4 @@
-const url = "http://127.0.0.1:3333/api";
+const url = "http://127.0.0.1:5000/api";
 const data = new Date();
 const developer = '_vako_'
 const servidor = 'Paradise Roleplay'
