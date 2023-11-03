@@ -70,7 +70,6 @@ const popularInputs = () => {
                 }
 
             } else {
-                console.log(res.msg);
                 swal({
                     text: `Erro interno. Por segurança será deslogado.`,
                     className: "custom-swal4",
