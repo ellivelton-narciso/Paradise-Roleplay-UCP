@@ -62,11 +62,17 @@ const renderTabela = ()=> {
                                 title: 'Tempo de VIP',
                                 render: function (data) {
                                     if (data === 0) {
-                                        return '0 dias'
+                                        return '0 dias';
                                     }
-                                    if (data >= 365) {
-                                        const ano = data/365
-                                        return `${parseInt(String(ano))} anos`
+
+                                    const segundos = data / 1000;
+                                    const dias = segundos / (60 * 60 * 24);
+
+                                    if (dias >= 365) {
+                                        const anos = Math.floor(dias / 365);
+                                        return `${anos} ano${anos > 1 ? 's' : ''}`;
+                                    } else {
+                                        return `${Math.floor(dias)} dia${dias > 1 ? 's' : ''}`;
                                     }
                                 }
                             },
