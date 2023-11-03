@@ -1,1 +1,3 @@
 httpRotas/*
+*.sqlite3
+*.db
