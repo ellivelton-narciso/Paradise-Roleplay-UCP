@@ -98,11 +98,19 @@ export default class AccountsController {
     }
 
     public async register({ request, response}: HttpContextContract) {
+      const regex = /^[A-Za-z_][A-Za-z0-9._]*$/;
+
       const body = request.body()
       const name: string = body.name
       const password: string = body.password
       const email: string = body.email ? body.email : ''
       const ip: string = body.ip ? body.ip : ''
+      if (!regex.test(name)) {
+        return response.status(403).json({
+          status: 403,
+          msg: "Usuário não pode conter espaços ou caracteres especiais exceto underline(_) e ponto(.)."
+        });
+      }
       const accountExist: Accounts | null = await Accounts.findBy('name', name)
       const emailExist: Accounts | null = await Accounts.findBy('email', email)
 
@@ -211,10 +219,19 @@ export default class AccountsController {
     }
 
     public async update({params, request, response}: HttpContextContract) {
+      const regex = /^[A-Za-z_][A-Za-z0-9._]*$/;
       const body = request.body()
       const user : Accounts | null = await Accounts.findBy('id', params.id)
+
+      if (!regex.test(body.name)) {
+        return response.status(200).json({
+          status: 403,
+          msg: "Usuário não pode conter espaços ou caracteres especiais exceto underline(_) e ponto(.)."
+        });
+      }
+
       if (!user) {
-        return response.status(404).json({
+        return response.status(200).json({
           status: 404,
           msg: 'Usuário não encontrado'
         })
@@ -235,7 +252,8 @@ export default class AccountsController {
       if (validHeader && tokenOK) {
         const newName: string = body.name !== user.name ? body.name : user.name
         const newPass: string = body.password === undefined || body.password === user.password ? user.password : body.password
-        const newEmail: string = body.email !== user.email ? body.email : user.email
+        const userEMail: string = this.removeNull(user.email)
+        const newEmail: string = body.email === user.email || body.email === null || body.email === undefined ? user.email : body.email
         const newNameFind = await Accounts.findBy('name', newName)
         const newNameExist = newNameFind !== null && newName !== user.name
         const newEmailFind = await Accounts.findBy('email', newEmail)
@@ -305,8 +323,18 @@ export default class AccountsController {
     }
 
     public async updateAdmin({params, request, response} : HttpContextContract) {
+      const regex = /^[A-Za-z_][A-Za-z0-9._]*$/;
+
       const body = request.body()
       const user: Accounts | null = await Accounts.findBy('id', params.id)
+
+      if (!regex.test(body.name)) {
+        return response.status(200).json({
+          status: 403,
+          msg: "Usuário não pode conter espaços ou caracteres especiais exceto underline(_) e ponto(.)."
+        });
+      }
+
       if (!user) {
         return response.status(404).json({
           status: 404,
@@ -409,6 +437,14 @@ export default class AccountsController {
         })
       }
 
+    }
+
+    private removeNull(value : string | null ) : string {
+      if (value === null) {
+        return ''
+      } else {
+        return value
+      }
     }
     private isTokenExpired(expirationDate: DateTime): boolean {
       const currentDateTime = DateTime.now();
