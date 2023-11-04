@@ -252,7 +252,7 @@ export default class AccountsController {
       if (validHeader && tokenOK) {
         const newName: string = body.name !== user.name ? body.name : user.name
         const newPass: string = body.password === undefined || body.password === user.password ? user.password : body.password
-        const userEMail: string = this.removeNull(user.email)
+        // const userEMail: string = this.removeNull(user.email)
         const newEmail: string = body.email === user.email || body.email === null || body.email === undefined ? user.email : body.email
         const newNameFind = await Accounts.findBy('name', newName)
         const newNameExist = newNameFind !== null && newName !== user.name
@@ -284,7 +284,8 @@ export default class AccountsController {
             "email": newEmail,
             "ip": user.ip,
             "vip": user.vip,
-            "viptime": user.viptime
+            "viptime": user.viptime,
+            "msg": "Atualizado com sucesso."
           })
         }
 
@@ -439,13 +440,13 @@ export default class AccountsController {
 
     }
 
-    private removeNull(value : string | null ) : string {
+    /*private removeNull(value : string | null ) : string {
       if (value === null) {
         return ''
       } else {
         return value
       }
-    }
+    }*/
     private isTokenExpired(expirationDate: DateTime): boolean {
       const currentDateTime = DateTime.now();
       const tokenExpirationDate = expirationDate.toJSDate();

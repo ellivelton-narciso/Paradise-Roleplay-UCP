@@ -39,25 +39,26 @@ const checkPasswordsMatch = (password, confirmPassword) => {
 };
 
 const popularInputs = () => {
-    const loadingAlert = swal({
-        title: 'Loading...',
-        content: {
-            element: 'div',
-            attributes: {
-                className: 'spinner-border',
-                role: 'status'
-            }
-        },
-        buttons: false,
-        closeOnEsc: false,
-        closeOnClickOutside: false,
-    });
-
     $.ajax({
         url: `${url}/users/${userID}`,
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${getCookie('tk')}`
+        },
+        beforeSend: () => {
+            swal({
+                title: 'Loading...',
+                content: {
+                    element: 'div',
+                    attributes: {
+                        className: 'spinner-border',
+                        role: 'status'
+                    }
+                },
+                buttons: false,
+                closeOnEsc: false,
+                closeOnClickOutside: false,
+            });
         },
         success: res => {
             swal.close();
@@ -68,7 +69,6 @@ const popularInputs = () => {
                 } else {
                     $('#email').val(res.email);
                 }
-
             } else {
                 swal({
                     text: `Erro interno. Por segurança será deslogado.`,
@@ -78,7 +78,7 @@ const popularInputs = () => {
                     }
                 }).then((confirm) => {
                     if (confirm) {
-                        logout();
+                        return logout();
                     }
                 });
             }
@@ -89,64 +89,95 @@ const popularInputs = () => {
     });
 };
 
-const validarPerfil = ()=> {
+const validarPerfil = () => {
     event.preventDefault();
+    removeError(username)
+    removeError(email)
 
+    function validarEmail(e) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(e);
+    }
     if (username.value.trim() === '') {
         showError(username, 'O nome de usuário é obrigatório');
-    } else {
-        removeError(username);
+        return;
+    }
+
+    if (email.value.trim() !== '' && !validarEmail(email.value)) {
+        showError(email, 'Formato inválido de e-mail.');
+        return;
     }
 
     if (newPassword.value !== '' || confirmPassword.value !== '') {
         checkPasswordsMatch(newPassword, confirmPassword);
+        return;
     }
 
-    if (!username.parentElement.classList.contains('has-error')) {
-        const body = {
-            name: username.value,
-            email: email.value,
-        };
+    const body = {
+        name: username.value,
+        email: email.value,
+    };
 
-        if (newPassword.value !== '') {
-            body.password = newPassword.value;
-        }
+    if (newPassword.value !== '') {
+        body.password = newPassword.value;
+    }
 
-        toggleFormLoading(true);
-
-        try {
-             $.ajax({
-                "url": `${url}/users/${userID}`,
-                "method": 'POST',
-                "headers": {
-                    'Authorization': `Bearer ${getCookie('tk')}`
-                },
-                "data": body,
-                "success": response => {
-                    if (response.status === 200) {
-                        popularInputs();
-                    }
+    $.ajax({
+            "url": `${url}/users/${userID}`,
+            "method": 'POST',
+            "headers": {
+                'Authorization': `Bearer ${getCookie('tk')}`
+            },
+            "data": body,
+            "success": response => {
+                switch (response.status) {
+                    case 200:
+                        popularInputs()
+                        document.getElementById('userDropdown').innerHTML = response.name
+                        swal({
+                            title: 'Alterado',
+                            text: response.msg,
+                            icon: 'success',
+                            button: 'OK'
+                        })
+                        break;
+                    case 403:
+                    case 401:
+                        swal({
+                            title: 'Erro',
+                            text: response.msg,
+                            icon: 'error',
+                            button: 'OK'
+                        })
+                        break;
+                    case 404:
+                        swal({
+                            title: 'Erro',
+                            text: response.msg,
+                            icon: 'error',
+                            button: 'OK'
+                        }).then(confirm => {
+                            if (confirm) {
+                                logout()
+                            }
+                        })
+                        break;
                 }
-            });
-        } catch (error) {
-        } finally {
-            toggleFormLoading(false);
-        }
-    }
+            }
+        });
 };
 
 function toggleFormLoading(isLoading) {
-    if (isLoading) {
-        submitButton.disabled = true;
-        inputs.forEach(input => input.disabled = true);
-        submitButton.innerHTML = 'Loading...';
-    } else {
-        submitButton.disabled = false;
-        inputs.forEach(input => input.disabled = false);
-        submitButton.innerHTML = 'Atualizar Perfil';
-    }
-}
+    const submitButton = document.querySelector('#submit');
+    const inputs = document.querySelectorAll('input');
 
+    submitButton.disabled = isLoading;
+    inputs.forEach((input) => {
+        input.disabled = isLoading;
+    });
+
+    submitButton.innerHTML = isLoading ? 'Loading...' : 'Atualizar Perfil';
+}
 document.querySelector('#submit').addEventListener('click', validarPerfil)
 
 popularInputs()

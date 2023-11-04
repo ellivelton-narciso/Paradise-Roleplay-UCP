@@ -157,7 +157,7 @@ table.on('click', '.btn-primary', function () {
                                 </div>
                                 <div class="mb-3">
                                     <label for="vipDuration" class="form-label">Tempo de VIP</label>
-                                    <input min="0" max="3650" type="number" id="vipDuration" class="form-control" value="${userApp.viptime}">
+                                    <input min="0" max="3650" type="number" id="vipDuration" class="form-control" value="${(userApp.viptime / 1000) / (24 * 60 * 60) >> 0 }">
                                 </div>
                                 <div class="mb-3 form-check">
                                     <input type="checkbox" id="admin" class="form-check-input" ${userApp.admin ? 'checked' : ''}>
@@ -182,7 +182,7 @@ table.on('click', '.btn-primary', function () {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const vip = parseInt(document.getElementById('vip').value);
-            const vipDuration = parseInt(document.getElementById('vipDuration').value);
+            const vipDuration = parseInt(document.getElementById('vipDuration').value) * 24 * 60 * 60 * 1000;
             const admin = document.getElementById('admin').checked ? 1 : 0
 
             if (email && !validateEmail(email)) {
