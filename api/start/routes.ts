@@ -4,7 +4,7 @@ Route.group(()=>{
   Route.get('/', async () => {
     return { hello: 'world' }
   })
-  Route.post('/login', 'AccountsController.store')
+  Route.post('/login', 'AccountsController.login')
   Route.post('/register', 'AccountsController.register')
   Route.get('/users', 'AccountsController.showAll')
   Route.get('/users/:id', 'AccountsController.show').where('id', /^[0-9]+$/)
