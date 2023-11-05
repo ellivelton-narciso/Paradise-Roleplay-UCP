@@ -6,7 +6,7 @@
  */
 
 import Env from '@ioc:Adonis/Core/Env'
-import Application from '@ioc:Adonis/Core/Application'
+//import Application from '@ioc:Adonis/Core/Application'
 import type { DatabaseConfig } from '@ioc:Adonis/Lucid/Database'
 
 const databaseConfig: DatabaseConfig = {
@@ -37,8 +37,8 @@ const databaseConfig: DatabaseConfig = {
     sqlite: {
       client: 'sqlite',
       connection: {
-        filename: Application.tmpPath('database.db'),
-        // filename: 'tmp/database.db',
+        //filename: Application.tmpPath('database.db'),
+        filename: Env.get('DB_LOCATION'),
       },
       pool: {
         afterCreate: (conn, cb) => {
