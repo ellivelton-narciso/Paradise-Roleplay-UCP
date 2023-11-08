@@ -28,6 +28,26 @@
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.characters" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.api_tokens" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.accounts" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.cars" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.cards" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.vehicles" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.api_tokens" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.houses" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.weapons" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.factions" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.administrative" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.shops" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.areas" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.accounts" active-filter-id="EMPTY_FILTER">
+      <filter id="743066ed-c493-410b-915b-8db28c5b4698" name="Vako" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="name" operator="=" value="Vako" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.serverdata" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.bank_accounts" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.jail" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.crimes" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.characters" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.aplicacoes" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
@@ -53,7 +73,7 @@
           <tns-folder value="" />
           <tns-profile value="" />
           <files>
-            <file path="C:\Users\Ellivelton\Documents\GitHub\PA\backend\api\tmp\database.db" schema="main" />
+            <file path="$PROJECT_DIR$/api/tmp/database.db" schema="database" />
           </files>
           <type value="NONE" />
           <user value="" />
@@ -94,6 +114,13 @@
           <max-connection-pool-size value="7" />
           <alternative-statement-delimiter value="" />
         </details>
+        <debugger>
+          <compile-dependencies value="true" />
+          <tcp-driver-tunneling value="false" />
+          <tcp-host-address value="" />
+          <tcp-port-from value="4000" />
+          <tcp-port-to value="4999" />
+        </debugger>
         <object-filters hide-empty-schemas="false" hide-pseudo-columns="false">
           <object-type-filter>
             <object-type name="SCHEMA" enabled="true" />
@@ -256,7 +283,6 @@
           <content-type name="JavaScript" enabled="true" />
           <content-type name="JSON" enabled="true" />
           <content-type name="JSON5" enabled="true" />
-          <content-type name="PHP" enabled="true" />
           <content-type name="YAML" enabled="true" />
         </content-types>
       </qualified-text-editor>
@@ -474,7 +500,6 @@
       </compiler>
       <debugger>
         <debugger-type value="JDBC" />
-        <use-generic-runners value="true" />
       </debugger>
     </operation-settings>
     <ddl-file-settings>
