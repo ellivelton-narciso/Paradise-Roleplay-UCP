@@ -76,6 +76,7 @@ export const alteraHeader = ()=> {
             <ul class="dropdown-menu" aria-labelledby="adminDropdown">
               <li><a class="dropdown-item" href="aplicacoes.html">Aplicações</a></li>
               <li><a class="dropdown-item" href="todos_usuarios.html">Todos os usuários</a></li>
+              <li><a class="dropdown-item" href="todos_personagens.html">Todos os personagens</a></li>
             </ul>
           </li>`
                 }
