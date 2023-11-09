@@ -13,7 +13,7 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="8f1cd291-71e5-410f-a09c-ef1f97c175cb">
-      <console name="Paradise" type="STANDARD" schema="main" session="Main"><![CDATA[select]]></console>
+      <console name="Paradise" type="STANDARD" schema="main" session="Main">select</console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -30,9 +30,12 @@
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.accounts" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.cars" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.cards" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.discord" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.vehicles" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.api_tokens" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.cellphone" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.houses" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.chips" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.weapons" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.factions" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.administrative" active-filter-id="EMPTY_FILTER" />
