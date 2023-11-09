@@ -3,6 +3,8 @@ import Accounts from 'App/Models/Accounts'
 import ApiToken from 'App/Models/ApiToken'
 import ms from 'ms'
 import { DateTime } from 'luxon'
+import EmailService from 'App/Service/EmailService'
+
 
 export default class AccountsController {
     public async login({ request, auth, response }: HttpContextContract) {
@@ -128,6 +130,7 @@ export default class AccountsController {
                 msg: 'Este usuário ou email já está cadastrado.',
             })
         } else {
+
             await Accounts.create({
                 'name': name,
                 'password': password,
@@ -140,6 +143,70 @@ export default class AccountsController {
                 'viptime': 0,
                 'saldo': 0,
             })
+          if (email !== '') {
+              try {
+                const html = `
+                  <html lang="pt-BR">
+                  <head>
+                    <title>Paradise Roleplay - Bem-vindo</title>
+                    <style>
+                      body {
+                        font-family: Arial, sans-serif;
+                        background-color: #f2f2f2;
+                        margin: 0;
+                        padding: 0;
+                      }
+
+                      .container {
+                        max-width: 600px;
+                        margin: 0 auto;
+                        padding: 20px;
+                        background-color: #ffffff;
+                        border-radius: 10px;
+                        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+                      }
+
+                      h1 {
+                        color: #ff6600;
+                      }
+
+                      p {
+                        color: #333;
+                        font-size: 16px;
+                      }
+
+                      a {
+                        color: #ff6600;
+                        text-decoration: none;
+                        font-weight: bold;
+                      }
+                    </style>
+                  </head>
+                  <body>
+                    <div class="container">
+                      <h1>Obrigado por se registrar, ${name}!</h1>
+                      <h3>Seja bem-vindo ao Paradise Roleplay!</h3>
+                      <p>Para se juntar à nossa comunidade no Discord, clique <a href="https://discord.gg/MymDXAdexs">aqui</a>, será muito bem vindo. Lá poderá interagir diretamente com outros jogadores e participar de eventos exclusivos.</p>
+                      <p>Para criar seu personagem, por favor, preencha a aplicação de criação de personagens clicando <a href="https://ucp.paradiseroleplay.pt/personagem-criar.html">aqui</a>.</p>
+                      <p>Caso queira acessar nosso fórum, poderá clicar <a href='https://paradiseroleplay.forumeiros.com/'>aqui</a> mesmo</p>
+                    </div>
+                  </body>
+                  </html>
+                `
+                await EmailService.sendMail(
+                  email,
+                  'Bem-vindo ao Nosso Site',
+                  html
+                )
+              } catch (e) {
+                return response.status(500).json({
+                  status: 500,
+                  msg: 'Erro ao enviar email',
+                  erro: e
+                })
+              }
+            }
+
 
             return response.status(201).json({
                 status: 201,
