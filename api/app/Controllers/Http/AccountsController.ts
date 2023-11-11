@@ -143,10 +143,10 @@ export default class AccountsController {
                 'viptime': 0,
                 'saldo': 0,
             })
-          if (email !== '') {
-              try {
-                const html = `
-                  <html lang="pt-BR">
+            if (email !== '') {
+                try {
+                    const html = `
+                  <html lang='pt-BR'>
                   <head>
                     <title>Paradise Roleplay - Bem-vindo</title>
                     <style>
@@ -183,28 +183,28 @@ export default class AccountsController {
                     </style>
                   </head>
                   <body>
-                    <div class="container">
+                    <div class='container'>
                       <h1>Obrigado por se registrar, ${name}!</h1>
                       <h3>Seja bem-vindo ao Paradise Roleplay!</h3>
-                      <p>Para se juntar à nossa comunidade no Discord, clique <a href="https://discord.gg/MymDXAdexs">aqui</a>, será muito bem vindo. Lá poderá interagir diretamente com outros jogadores e participar de eventos exclusivos.</p>
-                      <p>Para criar seu personagem, por favor, preencha a aplicação de criação de personagens clicando <a href="https://ucp.paradiseroleplay.pt/personagem-criar.html">aqui</a>.</p>
+                      <p>Para se juntar à nossa comunidade no Discord, clique <a href='https://discord.gg/MymDXAdexs'>aqui</a>, será muito bem vindo. Lá poderá interagir diretamente com outros jogadores e participar de eventos exclusivos.</p>
+                      <p>Para criar seu personagem, por favor, preencha a aplicação de criação de personagens clicando <a href='https://ucp.paradiseroleplay.pt/personagem-criar.html'>aqui</a>.</p>
                       <p>Caso queira acessar nosso fórum, poderá clicar <a href='https://paradiseroleplay.forumeiros.com/'>aqui</a> mesmo</p>
                     </div>
                   </body>
                   </html>
                 `
-                await EmailService.sendMail(
-                  email,
-                  'Bem-vindo ao Nosso Site',
-                  html
-                )
-              } catch (e) {
-                return response.status(500).json({
-                  status: 500,
-                  msg: 'Erro ao enviar email',
-                  erro: e
-                })
-              }
+                    await EmailService.sendMail(
+                      email,
+                      'Bem-vindo ao Nosso Site',
+                      html,
+                    )
+                } catch (e) {
+                    return response.status(500).json({
+                        status: 500,
+                        msg: 'Erro ao enviar email',
+                        erro: e,
+                    })
+                }
             }
 
 
