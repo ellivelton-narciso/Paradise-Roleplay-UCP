@@ -178,6 +178,8 @@ export default class CharactersController {
             msg: 'ID inexistente'
           })
         }
+        const conta = await Accounts.all()
+        const idConta = conta.filter(filtro => filtro.character0 === user.id || filtro.character1 === user.id || filtro.character2 === user.id)[0].id
         const bankAccount = await BankAccounts.findBy('owner', user.name)
 
         const userName: string = user.name
@@ -204,7 +206,7 @@ export default class CharactersController {
           })
           await Log.create({
             idAdmin: userID,
-            idUser: params.id,
+            idUser: idConta,
             section: 'Atualizar personagem',
             alterado: JSON.stringify({
               "antigo": {

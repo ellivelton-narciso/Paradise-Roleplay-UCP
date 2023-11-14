@@ -53,7 +53,7 @@ $.ajax({
                                     data: 'id_admin',
                                     title: 'Admin',
                                     render: function(data) {
-                                        return userList.contas.filter((filtro)=> filtro.id === data ? filtro.name : 'Sem nome')[0].name
+                                        return userList.contas.filter((filtro)=> filtro.id === data )[0].name
 
                                     }
                                 },
@@ -61,7 +61,7 @@ $.ajax({
                                     data: 'id_user',
                                     title: 'Usuário',
                                     render: function(data) {
-                                      return userList.contas.filter((filtro)=> filtro.id === data ? filtro.name : 'Sem nome')[0].name
+                                      return userList.contas.filter((filtro)=> filtro.id === data)[0].name
                                     }
                                 },
                                 {
@@ -107,7 +107,6 @@ $.ajax({
                                                     case 2:
                                                         admin = 'Master'
                                                     break;
-
                                                 }
                                                 return `
                                                     <div>
@@ -181,7 +180,7 @@ $.ajax({
                                                             break;
                                                     }
                                                     let admin;
-                                                    switch (dataJSON.admin) {
+                                                    switch (parseInt(dataJSON.admin)) {
                                                         case 0:
                                                             admin = 'Player';
                                                             break;
