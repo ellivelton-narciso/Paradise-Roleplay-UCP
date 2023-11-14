@@ -68,17 +68,40 @@ export const alteraHeader = ()=> {
                 if (res.isAdmin) {
                     const itemAplicacoes = document.getElementById('aplicacoes')
                     itemAplicacoes.setAttribute('class', 'nav-item')
-                    itemAplicacoes.innerHTML = `<li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" id="adminDropdown" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              Admin
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-              <li><a class="dropdown-item" href="aplicacoes.html">Aplicações</a></li>
-              <li><a class="dropdown-item" href="todos_usuarios.html">Todos os usuários</a></li>
-              <li><a class="dropdown-item" href="todos_personagens.html">Todos os personagens</a></li>
-            </ul>
-          </li>`
+                    switch (res.isAdmin) {
+                        case 1:
+                            itemAplicacoes.innerHTML = `
+                              <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" id="adminDropdown" role="button" data-bs-toggle="dropdown"
+                                  aria-expanded="false">
+                                  Admin
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                  <li><a class="dropdown-item" href="aplicacoes.html">Aplicações</a></li>
+                                </ul>
+                              </li>
+                            `
+                        break;
+                        case 2:
+                            itemAplicacoes.innerHTML = `
+                              <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" id="adminDropdown" role="button" data-bs-toggle="dropdown"
+                                  aria-expanded="false">
+                                  Admin
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                  <li><a class="dropdown-item" href="aplicacoes.html">Aplicações</a></li>
+                                  <li><a class="dropdown-item" href="todos_usuarios.html">Todos os usuários</a></li>
+                                  <li><a class="dropdown-item" href="todos_personagens.html">Todos os personagens</a></li>
+                                  <li><a class="dropdown-item" href="logs.html">Logs</a></li>
+                                </ul>
+                              </li>
+                            `
+                        break;
+                        default:
+                            break;
+                    }
+
                 }
             });
         }

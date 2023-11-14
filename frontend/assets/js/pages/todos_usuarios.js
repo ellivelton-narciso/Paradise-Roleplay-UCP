@@ -2,6 +2,7 @@ import {language} from "../traducaoTabela.js";
 
 const table = $('<table id="tabela" class="table table-striped table-bordered"></table>').appendTo('.table-responsive');
 let dataTable;
+const today = new Date().getTime()
 
 const renderTabela = ()=> {
     $.ajax({
@@ -64,23 +65,34 @@ const renderTabela = ()=> {
                                     if (data === 0) {
                                         return '0 dias';
                                     }
+                                    function diferencaDiasQntd(timestamp1, timestamp2) {
+                                      const date1 = new Date(timestamp1);
+                                      const date2 = new Date(timestamp2);
+                                      const differenceInMilliseconds = date2.getTime() - date1.getTime();
+                                      const differenceInDays = Math.floor(differenceInMilliseconds / (24 * 60 * 60 * 1000));
 
-                                    const segundos = data / 1000;
-                                    const dias = segundos / (60 * 60 * 24);
-
-                                    if (dias >= 365) {
-                                        const anos = Math.floor(dias / 365);
-                                        return `${anos} ano${anos > 1 ? 's' : ''}`;
-                                    } else {
-                                        return `${Math.floor(dias)} dia${dias > 1 ? 's' : ''}`;
+                                      if (differenceInDays < 365) {
+                                        if (differenceInDays === 1) {
+                                            return `${differenceInDays} dia`;
+                                        }
+                                        return `${differenceInDays} dias`;
+                                      } else {
+                                        const years = Math.floor(differenceInDays / 365);
+                                        if (years === 1) {
+                                            return `${years} ano`;
+                                        }
+                                        return `${years} anos`;
+                                      }
                                     }
+                                    return diferencaDiasQntd( today, data)
+
                                 }
                             },
                             {
                                 data: 'admin',
                                 title: 'Admin',
                                 render: function (data) {
-                                    return data === 1 ? "Sim" : "Não"
+                                    return data === 2 ? "Master" : data === 1 ? "Admin" : "Jogador"
                                 }
                             },
                             {
@@ -127,6 +139,13 @@ table.on('click', '.btn-primary', function () {
 
     const emailValue = userApp.email === 'Undefined' ? '' : userApp.email;
 
+    function diferencaDias(timestamp1, timestamp2) {
+      const date1 = new Date(timestamp1);
+      const date2 = new Date(timestamp2);
+      const differenceInMilliseconds = date2.getTime() - date1.getTime();
+      return Math.floor(differenceInMilliseconds / (24 * 60 * 60 * 1000));
+    }
+
     swal({
         title: 'Editar Usuário',
         content: {
@@ -157,11 +176,15 @@ table.on('click', '.btn-primary', function () {
                                 </div>
                                 <div class="mb-3">
                                     <label for="vipDuration" class="form-label">Tempo de VIP</label>
-                                    <input min="0" max="3650" type="number" id="vipDuration" class="form-control" value="${(userApp.viptime / 1000) / (24 * 60 * 60) >> 0 }">
+                                    <input min="0" max="3650" type="number" id="vipDuration" class="form-control" value="${diferencaDias(today, userApp.viptime)}">
                                 </div>
                                 <div class="mb-3 form-check">
-                                    <input type="checkbox" id="admin" class="form-check-input" ${userApp.admin ? 'checked' : ''}>
+                                    <input type="checkbox" id="admin" class="form-check-input" ${userApp.admin === 1 ? 'checked' : ''}>
                                     <label for="admin" class="form-check-label">Admin</label>
+                                </div>
+                                <div class="mb-3 form-check">
+                                    <input type="checkbox" id="master" class="form-check-input" ${userApp.admin === 2 ? 'checked' : ''}>
+                                    <label for="master" class="form-check-label">Master</label>
                                 </div>
                             `
             }
@@ -178,12 +201,18 @@ table.on('click', '.btn-primary', function () {
         focusConfirm: false,
     }).then((confirm) => {
         if (confirm) {
+            function addDaysToDate(date, days) {
+              const newDate = new Date(date);
+              newDate.setDate(newDate.getDate() + days);
+              return newDate.getTime()
+            }
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const vip = parseInt(document.getElementById('vip').value);
-            const vipDuration = parseInt(document.getElementById('vipDuration').value) * 24 * 60 * 60 * 1000;
+            const vipDuration = addDaysToDate(today, parseInt(document.getElementById('vipDuration').value))
             const admin = document.getElementById('admin').checked ? 1 : 0
+            const master = document.getElementById('master').checked ? 2 : 0
 
             if (email && !validateEmail(email)) {
                 swal({
@@ -217,7 +246,7 @@ table.on('click', '.btn-primary', function () {
                 "email": email,
                 "vip": vip,
                 "viptime": vipDuration,
-                "admin": admin
+                "admin": master === 0 ? admin : master
             }
 
             if (password !== '') {

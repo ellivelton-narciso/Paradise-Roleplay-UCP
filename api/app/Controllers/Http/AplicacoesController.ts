@@ -7,6 +7,7 @@ import ApiToken from 'App/Models/ApiToken'
 import Aplicacoes from 'App/Models/Aplicacoe'
 import Database from '@ioc:Adonis/Lucid/Database'
 import EmailService from 'App/Service/EmailService'
+import Log from 'App/Models/Log'
 
 export default class AplicacoesController {
   public async register({ params, request, response }: HttpContextContract) {
@@ -190,7 +191,7 @@ export default class AplicacoesController {
       if (!res) {
         return false
       }
-      return res.admin === 1
+      return res.admin >= 1
     })
 
     if (validHeader && tokenOK) {
@@ -303,7 +304,7 @@ export default class AplicacoesController {
       if (!res) {
         return null
       }
-      if (res.admin !== 1) {
+      if (res.admin < 1) {
         return null
       }
       return res
@@ -395,6 +396,15 @@ export default class AplicacoesController {
               'status': status,
               'mensagem': resposta,
             })
+            await Log.create({
+              idAdmin: idAdm,
+              idUser: solicitante.id,
+              section: 'Aplicação de personagem',
+              alterado: JSON.stringify({
+                message: resposta,
+                aprovado: status === 1 ? 'Aprovado' : 'Reprovado',
+              }),
+            })
             if (jaAprovado) {
               if(solicitante.email !== '' && solicitante.email !== 'Undefined') {
                 try {
@@ -476,6 +486,7 @@ export default class AplicacoesController {
                   })
                 }
               }
+              //Log
               return response.status(200).json({
                 status: 201,
                 msg: 'Personagem criado antes da UCP aprovado na whitelist.',
@@ -653,6 +664,15 @@ export default class AplicacoesController {
             }, {
               'status': status,
               'mensagem': resposta,
+            })
+            await Log.create({
+              idAdmin: idAdm,
+              idUser: solicitante.id,
+              section: 'Aplicação de personagem',
+              alterado: JSON.stringify({
+                message: resposta,
+                aprovado: status === 1 ? 'Sim' : 'Não'
+              })
             })
             if(solicitante.email !== '' && solicitante.email !== 'Undefined') {
                 try {

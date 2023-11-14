@@ -87,24 +87,11 @@ const comPersonagensDiv =`
           </div>
         </div>
     `
-const personagensStorage = JSON.parse(localStorage.getItem('usuario')).character
-const qtdPersonagens = personagensStorage.filter(k => k !== -1).length
+let personagensStorage = JSON.parse(localStorage.getItem('usuario')).character
+let qtdPersonagens = personagensStorage.filter(k => k !== -1).length
 const userID = JSON.parse(localStorage.getItem('usuario')).userId
-if (qtdPersonagens === 0) {
-    $.ajax({
-        "url": `${url}/characters/${userID}`,
-        "method": "GET",
-        "timeout": 0,
-        "headers": {
-            "Authorization": `Bearer ${getCookie('tk')}`
-        }
-    })
-        .done((res)=> {
-            document.getElementById('qtdNegadas').innerHTML = `${res.aplicacoes}/3`
-        })
-    document.getElementById('centerPersonagens').innerHTML = semPersonagensDiv
 
-} else {
+const renderComPersonagens = () => {
     $.ajax({
         "url": `${url}/characters/${userID}`,
         "method": "GET",
@@ -248,6 +235,25 @@ if (qtdPersonagens === 0) {
         error: ()=> logout()
     })
     document.getElementById('centerPersonagens').innerHTML = comPersonagensDiv
-
 }
+$.ajax({
+    "url": `${url}/characters/${userID}`,
+    "method": "GET",
+    "timeout": 0,
+    "headers": {
+        "Authorization": `Bearer ${getCookie('tk')}`
+    }
+})
+.done((res)=> {
+    if (res.personagens.length === 0) {
+        document.getElementById('centerPersonagens').innerHTML = semPersonagensDiv
+    } else {
+        renderComPersonagens()
+        const pers = JSON.parse(localStorage.getItem('usuario'))
+        pers.character = res.personagensLista
+        localStorage.usuario = JSON.stringify(pers)
+
+    }
+    document.getElementById('qtdNegadas').innerHTML = `${res.aplicacoes}/3`
+})
 document.getElementById('qtdPersonagens').innerHTML = `${qtdPersonagens}/${personagensStorage.length}`

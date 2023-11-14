@@ -4,6 +4,7 @@ import Accounts from 'App/Models/Accounts'
 import ApiToken from 'App/Models/ApiToken'
 import Aplicacoes from 'App/Models/Aplicacoe'
 import BankAccounts from 'App/Models/BankAccount'
+import Log from 'App/Models/Log'
 
 export default class CharactersController {
     public async index({ params, response }: HttpContextContract) {
@@ -29,6 +30,7 @@ export default class CharactersController {
             if (validHeader && tokenOK) {
                 return response.status(200).json({
                     'status': 200,
+                    'personagensLista': [user.character0, user.character1, user.character2],
                     'personagens': charactersConnect,
                     'aplicacoes': aplicacoes.length,
                 })
@@ -127,7 +129,7 @@ export default class CharactersController {
       })
 
       const tokenOK: boolean = await Accounts.findBy('id', userID).then(res => {
-        return !res ? false : res.admin === 1
+        return !res ? false : res.admin > 1
       })
       if (validHeader && tokenOK) {
         const personagens: Character[] = await Character.all()
@@ -155,12 +157,18 @@ export default class CharactersController {
           msg: 'Sem permissão ou token está inválido.'
         })
       }
-      const userID: number | boolean = await ApiToken.findBy('token', tokenBody).then(data => {
-          return data ? data.userId : false
+      const userID: number | null = await ApiToken.findBy('token', tokenBody).then(data => {
+          return data ? data.userId : null
       })
+      if (!userID) {
+        return response.status(401).json({
+          status: 401,
+          msg: 'Usuário admin não encontrado'
+        })
+      }
 
       const tokenOK: boolean = await Accounts.findBy('id', userID).then(res => {
-        return !res ? false : res.admin === 1
+        return !res ? false : res.admin > 1
       })
       if (validHeader && tokenOK) {
         const user: Character | null = await Character.findBy('id', params.id);
@@ -193,6 +201,29 @@ export default class CharactersController {
             sex: userGenero === bodyGenero ? userGenero : bodyGenero == 1 || bodyGenero == 2 ? bodyGenero : userGenero,
             level: bodyLevel,
             money: bodyMoney,
+          })
+          await Log.create({
+            idAdmin: userID,
+            idUser: params.id,
+            section: 'Atualizar personagem',
+            alterado: JSON.stringify({
+              "antigo": {
+                name: user.name,
+                birthday: user.birthday,
+                sex: user.sex,
+                level: user.level,
+                money: user.money,
+                bankAccount: bankAccount && bodyBankAccount ? bankAccount.balance : 'Sem conta no banco'
+              },
+              "novo": {
+                name: userName === bodyName ? userName : bodyName.split('_').length === 2 ? bodyName : userName,
+                birthday: userNascimento === bodyNascimento ? userNascimento : bodyNascimento.split('/').length === 3 ? bodyNascimento : userNascimento,
+                sex: userGenero === bodyGenero ? userGenero : bodyGenero == 1 || bodyGenero == 2 ? bodyGenero : userGenero,
+                level: bodyLevel,
+                money: bodyMoney,
+                bankAccount: bankAccount && bodyBankAccount ? bodyBankAccount : 'Sem conta no banco'
+              }
+            })
           })
 
           if(bankAccount !== null && bodyBankAccount !== null) {

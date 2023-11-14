@@ -4,11 +4,13 @@ import ApiToken from 'App/Models/ApiToken'
 import ms from 'ms'
 import { DateTime } from 'luxon'
 import EmailService from 'App/Service/EmailService'
+import Log from 'App/Models/Log'
 
 
 export default class AccountsController {
     public async login({ request, auth, response }: HttpContextContract) {
         const { name, password } = request.only(['name', 'password'])
+        const ipv4 = request.ip()
 
         try {
             const user = await Accounts.findBy('name', name)
@@ -29,7 +31,16 @@ export default class AccountsController {
             const tempoDefaultExpire = ms('3h')
             const existToken = await ApiToken.findBy('user_id', user.id)
 
-
+            try {
+              await Accounts.updateOrCreate({id: user.id}, {ip: ipv4})
+            }
+            catch (error) {
+              return response.status(500).json({
+                status: 500,
+                msg: 'Erro interno.',
+                erro: error.message,
+              })
+            }
             if (existToken) {
                 const isExpired = this.isTokenExpired(existToken.expiresAt)
                 if (isExpired) {
@@ -42,15 +53,15 @@ export default class AccountsController {
                         const token = auth.use('api').token!
 
                         return response.status(200).json({
-                            'status': 200,
-                            'user': {
-                                'userId': token.userId,
-                                'name': user.name,
-                                'admin': user.admin,
-                                'character': [user.character0, user.character1, user.character2],
-                                'tokenHash': token.tokenHash,
-                                'expiresAt': token.expiresAt,
-                            },
+                          'status': 200,
+                          'user': {
+                              'userId': token.userId,
+                              'name': user.name,
+                              'admin': user.admin,
+                              'character': [user.character0, user.character1, user.character2],
+                              'tokenHash': token.tokenHash,
+                              'expiresAt': token.expiresAt,
+                          },
                         })
                     } catch (e) {
                         return response.status(500).json({
@@ -78,9 +89,9 @@ export default class AccountsController {
             // Obtém o token gerado após a autenticação
             const token = auth.use('api').token!
 
+
             return response.status(200).json({
                 'status': 200,
-
                 'user': {
                     'userId': token.userId,
                     'name': user.name,
@@ -266,13 +277,13 @@ export default class AccountsController {
         }
     }
 
-    public async showAll(response: HttpContextContract) {
-        const authorization: string[] = response.response.header('Authorization', 'Bearer').request.rawHeaders
+    public async showAll({response}: HttpContextContract) {
+        const authorization: string[] = response.header('Authorization', 'Bearer').request.rawHeaders
         const findAuthorization: number = authorization.indexOf('Authorization') + 1
         const validHeader: boolean = authorization[findAuthorization].split(' ')[0] === 'Bearer' && authorization[findAuthorization].split(' ').length === 2
         const tokenBody: string = authorization[findAuthorization].split(' ')[1]
         if (tokenBody == undefined) {
-            return response.response.status(401).json({
+            return response.status(401).json({
                 status: 401,
                 msg: 'Sem permissão ou token está inválido.',
             })
@@ -288,17 +299,17 @@ export default class AccountsController {
             if (!res) {
                 return false
             }
-            return res.admin === 1
+            return res.admin > 0
         })
 
         if (validHeader && tokenOK) {
             const contas = await Accounts.all()
-            return response.response.status(200).json({
+            return response.status(200).json({
                 status: 200,
                 contas,
             })
         }
-        return response.response.status(401).json({
+        return response.status(401).json({
             status: 401,
             msg: 'Sem permissão ou token está inválido.',
         })
@@ -401,17 +412,25 @@ export default class AccountsController {
                 return false
             }
         })
-        const tokenOK: boolean = await Accounts.findBy('id', user).then(res => {
+        const levelAdmin = await Accounts.findBy('id', user).then(res => {
             if (!res) {
                 return false
             }
-            return res.admin === 1
+            return res.admin
         })
 
-        return response.status(200).json({
-            status: 200,
-            isAdmin: validHeader && tokenOK,
+        if (validHeader) {
+          return response.status(200).json({
+              status: 200,
+              isAdmin: levelAdmin
+          })
+        }
+        return response.status(404).json({
+              status: 404,
+              msg: 'Header Inválido'
         })
+
+
 
 
     }
@@ -423,7 +442,7 @@ export default class AccountsController {
         const user: Accounts | null = await Accounts.findBy('id', params.id)
 
         if (!regex.test(body.name)) {
-            return response.status(200).json({
+            return response.status(403).json({
                 status: 403,
                 msg: 'Usuário não pode conter espaços ou caracteres especiais exceto underline(_) e ponto(.).',
             })
@@ -439,18 +458,20 @@ export default class AccountsController {
         const findAuthorization: number = authorization.indexOf('Authorization') + 1
         const validHeader: boolean = authorization[findAuthorization].split(' ')[0] === 'Bearer' && authorization[findAuthorization].split(' ').length === 2
         const tokenBody: string = authorization[findAuthorization].split(' ')[1]
-        const userAdmin: number | boolean = await ApiToken.findBy('token', tokenBody).then(data => {
-            if (data) {
-                return data.userId
-            } else {
-                return false
-            }
-        })
+        const userAdmin: number | null = await ApiToken.findBy('token', tokenBody).then(data => data ? data.userId : null)
+
+        if (!userAdmin) {
+          return response.status(400).json({
+            status: 400,
+            msg: 'Token Inválido'
+          })
+        }
+
         const tokenOK: boolean = await Accounts.findBy('id', userAdmin).then(res => {
             if (!res) {
                 return false
             }
-            return res.admin === 1
+            return res.admin === 2
         })
 
         if (validHeader && tokenOK) {
@@ -463,13 +484,13 @@ export default class AccountsController {
             const newEmailExiste = newEmailFind !== null && newEmail !== user.email
 
             if (newPass === '' || newName === '') {
-                return response.status(200).json({
+                return response.status(401).json({
                     status: 401,
                     msg: 'Nome ou Senha não podem estar vazios.',
                 })
             }
             if (newNameExist || newEmailExiste && newEmail !== '') {
-                return response.status(200).json({
+                return response.status(401).json({
                     status: 401,
                     msg: 'Este Nome ou Email já está cadastrado.',
                 })
@@ -482,7 +503,29 @@ export default class AccountsController {
                     'email': newEmail,
                     'vip': body.vip,
                     'viptime': body.viptime,
-                    'admin': body.admin,
+                    'admin': user.admin !== body.admin && user.admin < 2 ? body.admin : user.admin
+                })
+                await Log.create({
+                  idAdmin: userAdmin,
+                  idUser: user.id,
+                  section: 'Atualizar Usuário',
+                  alterado: JSON.stringify({
+                    "antigo": {
+                      "name": user.name,
+                      "email": user.email,
+                      "vip": user.vip,
+                      "viptime": user.viptime,
+                      "admin": user.admin
+                    },
+                    "novo": {
+                      'name': newName,
+                      'password': body.password === undefined || body.password === user.password ? 'Senhão não alterada' : 'Senha alterada',
+                      'email': newEmail,
+                      'vip': body.vip,
+                      'viptime': body.viptime,
+                      'admin': user.admin !== body.admin && user.admin < 2 ? body.admin : user.admin,
+                    }
+                  })
                 })
                 return response.status(200).json({
                     'status': 200,
@@ -491,9 +534,9 @@ export default class AccountsController {
 
             }
         }
-        return response.status(200).json({
-            status: 404,
-            msg: 'Token inválido ou não é um administrador.',
+        return response.status(404).json({
+            status: 401,
+            msg: 'Sem permissão suficiente',
         })
     }
 

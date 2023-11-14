@@ -18,9 +18,9 @@ Route.group(()=>{
   Route.post('/characters/:id', 'CharactersController.update').where('id', /^[0-9]+$/)
   Route.post('/characters/:id/register', 'AplicacoesController.register').where('id', /^[0-9]+$/)
   Route.post('/characters/avaliacao/:id', 'AplicacoesController.update').where('id', /^[0-9]+$/)
-
   Route.get('/aplicacoes', 'AplicacoesController.showAll')
   Route.get('/aplicacoes/:id', 'AplicacoesController.show').where('id', /^[0-9]+$/)
   Route.get('/aplicacoes/user/:id', 'AplicacoesController.showUser').where('id', /^[0-9]+$/)
+  Route.get('/logs', 'LogsController.show')
 
 }).prefix('/api')
