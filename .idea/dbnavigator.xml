@@ -13,7 +13,7 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="8f1cd291-71e5-410f-a09c-ef1f97c175cb">
-      <console name="Paradise" type="STANDARD" schema="main" session="Main">select</console>
+      <console name="Paradise" type="STANDARD" schema="main" session="Main"><![CDATA[select]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -25,21 +25,12 @@
     <open-files />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
-    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.characters" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.api_tokens" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.accounts" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.cars" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.cards" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.discord" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.vehicles" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.api_tokens" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.cellphone" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.houses" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.chips" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.weapons" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.factions" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.administrative" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.shops" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.areas" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.accounts" active-filter-id="EMPTY_FILTER">
       <filter id="743066ed-c493-410b-915b-8db28c5b4698" name="Vako" temporary="false" custom-name="false" type="basic" join-type="AND">
@@ -47,10 +38,22 @@
       </filter>
     </filter-actions>
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.serverdata" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.bank_accounts" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.jail" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.crimes" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.whitelist" active-filter-id="" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.characters" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.characters" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.accounts" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.cards" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.cellphone" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.houses" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.chips" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.weapons" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.factions" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.shops" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.bank_accounts" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.logs" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.aplicacoes" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="database.crimes" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="8f1cd291-71e5-410f-a09c-ef1f97c175cb" dataset="main.aplicacoes" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.ObjectQuickFilterManager">
