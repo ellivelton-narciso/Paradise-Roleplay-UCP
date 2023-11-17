@@ -5,6 +5,7 @@ import ms from 'ms'
 import { DateTime } from 'luxon'
 import EmailService from 'App/Service/EmailService'
 import Log from 'App/Models/Log'
+import Recovery from 'App/Models/Recovery'
 
 
 export default class AccountsController {
@@ -552,17 +553,8 @@ export default class AccountsController {
             })
         }
         try {
-            const user: number | boolean = await ApiToken.findBy('token', tokenBody).then(data => {
-                if (data) {
-                    return data.userId
-                } else {
-                    return false
-                }
-            })
-            const tokenOK: boolean = await Accounts.findBy('id', user).then(res => {
-                return !res ? false : true
-            })
-
+            const user: number | boolean = await ApiToken.findBy('token', tokenBody).then(data => data ? data.userId : false)
+            const tokenOK: boolean = !!await Accounts.findBy('id', user)
             return response.status(200).json({
                 status: 200,
                 isLogged: validHeader && tokenOK,
@@ -575,6 +567,129 @@ export default class AccountsController {
         }
 
     }
+
+    public async recovery ({request, response}: HttpContextContract) {
+      const email: string = request.body().email
+      const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/gi;
+
+      if(!emailRegex.test(email)) {
+        return response.status(400).json({
+          status: 400,
+          msg: 'E-mail inválido'
+        })
+      }
+      const user = await Accounts.findBy('email', email)
+
+      if (!user) {
+        return response.status(400).json({
+          status: 400,
+          msg: 'Usuário não está cadastrado'
+        })
+      }
+      try {
+        const tempoDefaultExpire = ms('1h')
+        const existCode = await Recovery.findBy('id_user', user.id)
+
+        if (existCode) {
+          const isExpired = this.isTokenExpired(existCode.expiresAt)
+
+          if (isExpired) {
+            await Recovery.query().where('code', existCode.code).delete()
+            function gerarLetraAleatoria() {
+              const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+              const indiceAleatorio = Math.floor(Math.random() * alfabeto.length);
+              return alfabeto[indiceAleatorio];
+            }
+            function gerarDigitoAleatorio() {
+              return Math.floor(Math.random() * 10).toString();
+            }
+            function gerarCodigoAleatorio() {
+              let codigo = '';
+
+              // Gera 6 dígitos
+              for (let i = 0; i < 6; i++) {
+                codigo += gerarDigitoAleatorio();
+              }
+
+              // Adiciona 1 letra
+              codigo += gerarLetraAleatoria();
+
+              // Embaralha os caracteres para tornar a sequência menos previsível (opcional)
+              codigo = codigo.split('').sort(() => Math.random() - 0.5).join('');
+
+              return codigo;
+            }
+
+            const codigoGerado = gerarCodigoAleatorio();
+
+            await Recovery.create({
+              idUser: user.id,
+              code: codigoGerado,
+              used: 0,
+              expiresAt: tempoDefaultExpire
+            })
+            try {
+              const html = `
+                <html lang='pt-BR'>
+                <head>
+                  <title>Paradise Roleplay - Recuperação de senhas</title>
+                  <style>
+                    body {
+                      font-family: Arial, sans-serif;
+                      background-color: #f2f2f2;
+                      margin: 0;
+                      padding: 0;
+                    }
+                    .container {
+                      max-width: 600px;
+                      margin: 0 auto;
+                      padding: 20px;
+                      background-color: #ffffff;
+                      border-radius: 10px;
+                      box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+                    }
+                    p {
+                      color: #333;
+                      font-size: 16px;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <div class='container'>
+                    <p>Use este código para recuperar sua senha: ${codigoGerado}</p>
+                  </div>
+                </body>
+                </html>
+              `
+              await EmailService.sendMail(
+                email,
+                'Recuperação de senha',
+                html,
+              )
+              } catch (e) {
+                  return response.status(500).json({
+                      status: 500,
+                      msg: 'Erro ao enviar email',
+                      erro: e,
+                  })
+                }
+              }
+            }
+      } catch (e){
+        return response.status(500).json({
+          status: 500,
+          msg: 'Erro Interno'
+        })
+      }
+
+
+
+
+
+
+
+    }
+
 
     /*private removeNull(value : string | null ) : string {
       if (value === null) {
