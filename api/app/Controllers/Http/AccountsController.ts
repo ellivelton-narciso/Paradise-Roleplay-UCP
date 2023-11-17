@@ -570,7 +570,7 @@ export default class AccountsController {
 
     public async recovery ({request, response}: HttpContextContract) {
       const email: string = request.body().email
-      const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/gi;
+      const emailRegex = /[a-z0-9]+@[a-z0-9]+\.[a-z]+/gi;
 
       if(!emailRegex.test(email)) {
         return response.status(400).json({
