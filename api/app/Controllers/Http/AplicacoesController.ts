@@ -29,6 +29,7 @@ export default class AplicacoesController {
     const origem: string = body.origem
     const sexo: number = body.sexo
     const historia: string = body.historia
+    const noCodeRegex = /^[^<>]+$/;
     // const {nome, sobrenome, nascimento, origem, sexo, historia} = request.only(['nome', 'sobrenome', 'nascimento', 'origem', 'sexo', 'historia'])
     const user: Accounts | null = await Accounts.findBy('id', params.id)
     if (!user) {
@@ -48,6 +49,13 @@ export default class AplicacoesController {
         return false
       }
     })
+    if (!noCodeRegex.test(historia) || !noCodeRegex.test(nome) || !noCodeRegex.test(sobrenome) || !noCodeRegex.test(nascimento) || !noCodeRegex.test(origem)) {
+      return response.status(200).json({
+        status: 406,
+        msg: 'Sem tags nos inputs',
+      })
+    }
+
     if (historia.length > 3000) {
       return response.status(200).json({
         status: 403,
@@ -376,6 +384,13 @@ export default class AplicacoesController {
             msg: 'Personagem já está cadastrado para outro usuário, contacte o desenvolvedor.',
           })
         }
+      }
+      const noCodeRegex = /^[^<>]+$/;
+      if (!noCodeRegex.test(resposta)) {
+        return response.status(200).json({
+          status: 406,
+          msg: 'Oi Palhaço'
+        })
       }
 
       switch (status) {

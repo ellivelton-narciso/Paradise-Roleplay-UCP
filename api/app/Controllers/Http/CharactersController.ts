@@ -52,6 +52,15 @@ export default class CharactersController {
 
     public async update({ params, request, response }: HttpContextContract) {
         const body = request.body()
+        const noCodeRegex = /^[^<>]+$/;
+
+        if (!noCodeRegex.test(body.skin)) {
+          return response.status(200).json({
+            status: 401,
+            msg: 'Oi Palhaço'
+          })
+        }
+
         const personagem: Character | null = await Character.findBy('id', params.id)
         if (personagem) {
             const user: Accounts | null = await Accounts.findBy('id', body.id)

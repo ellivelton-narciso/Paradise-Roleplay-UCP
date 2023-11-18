@@ -103,7 +103,7 @@ const validarPerfil = () => {
         return;
     }
 
-    if (email.value.trim() !== '' && !validarEmail(email.value)) {
+    if (email.value !== '' && !validarEmail(email.value)) {
         showError(email, 'Formato inválido de e-mail.');
         return;
     }
@@ -121,6 +121,8 @@ const validarPerfil = () => {
     if (newPassword.value !== '') {
         body.password = newPassword.value;
     }
+
+    console.log(body)
 
     $.ajax({
             "url": `${url}/users/${userID}`,

@@ -177,6 +177,12 @@ const novaAplicacao =  () => {
                     localStorage.removeItem('appEdita');
                     localStorage.removeItem('personagensSemAplicacao');
                     break;
+                case 406:
+                    erroAlert.removeClass("visually-hidden");
+                    let contador = 0;
+                    while (contador < 1) {
+                      erroAlert.text(res.msg);
+                    }
                 default:
                     erroAlert.text("Erro desconhecido, reporte para um administrador! E3982");
                     erroAlert.removeClass("visually-hidden");

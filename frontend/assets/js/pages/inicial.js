@@ -183,11 +183,12 @@ const renderComPersonagens = () => {
 
                     // Tratar ação de salvar os dados do modal
                     document.getElementById('salvar').addEventListener('click', () => {
+                        const regexNumeros = /^[0-9]+$/;
                         const idEditar = res.personagens[i].id
                         const idConta = Number(JSON.parse(localStorage.getItem('usuario')).userId)
-                        const skin = Number(document.getElementById('skinEditar').value);
+                        const skin = document.getElementById('skinEditar').value;
                         const skinsInvalidas = [0, 211, 217, 265, 266, 267, 268, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 300, 301, 302, 306, 307, 308, 309, 310, 311]
-                        if(skin < 0 || skin > 305 || skinsInvalidas.filter(filtro => skin === filtro).length > 0) {
+                        if(skin < 0 || skin > 305 || skinsInvalidas.filter(filtro => skin == filtro).length > 0 || !regexNumeros.test(skin)) {
                             document.getElementById('skinEditar').classList.add('is-invalid')
                             document.getElementById('errorMessage').classList.remove('visually-hidden')
                         } else {
@@ -208,19 +209,29 @@ const renderComPersonagens = () => {
 
                                 },
                                 success: res => {
-                                    const myModal = bootstrap.Modal.getInstance(document.getElementById('myModal'));
-                                    myModal.hide();
-                                    document.getElementById(`personagem${i}-img`).removeAttribute('src')
-                                    document.getElementById(`personagem${i}-img`).setAttribute('src', `https://assets.open.mp/assets/images/skins/${skin}.png`)
-                                    swal({
-                                        text:  res.msg,
-                                        className: "custom-swal2",
-                                        closeOnClickOutside: true,
-                                        closeOnEsc: true,
-                                        buttons: {
-                                            confirm: true,
-                                        }
-                                    })
+                                    switch (res.status) {
+                                        case 200:
+                                        case 201:
+                                            const myModal = bootstrap.Modal.getInstance(document.getElementById('myModal'));
+                                            myModal.hide();
+                                            document.getElementById(`personagem${i}-img`).removeAttribute('src')
+                                            document.getElementById(`personagem${i}-img`).setAttribute('src', `https://assets.open.mp/assets/images/skins/${skin}.png`)
+                                            swal({
+                                                text:  res.msg,
+                                                className: "custom-swal2",
+                                                closeOnClickOutside: true,
+                                                closeOnEsc: true,
+                                                buttons: {
+                                                    confirm: true,
+                                                }
+                                            })
+                                            break;
+                                        case 401:
+                                            document.getElementById('skinEditar').classList.add('is-invalid')
+                                            document.getElementById('errorMessage').classList.remove('visually-hidden')
+                                            document.getElementById('errorMessage').innerHTML = res.msg
+                                    }
+
                                 }
                             })
                         }

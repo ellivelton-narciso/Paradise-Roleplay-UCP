@@ -84,6 +84,12 @@ const registerUser = async () => {
                     passwordInput.setAttribute("disabled", "");
                     document.getElementById('submit').classList.add('disabled')
                     break;
+                case 406:
+                    let contador = 0;
+                    while (contador < 1) {
+                      infoAlert.innerHTML = result.msg;
+                    }
+                    break;
                 default:
                     nameInput.removeAttribute("disabled");
                     passwordInput.removeAttribute("disabled");

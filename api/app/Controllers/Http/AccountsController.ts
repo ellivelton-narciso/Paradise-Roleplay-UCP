@@ -112,6 +112,8 @@ export default class AccountsController {
 
     public async register({ request, response }: HttpContextContract) {
         const regex = /^[A-Za-z_][A-Za-z0-9._]*$/
+        const emailRegex = /^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]+$/g;
+        const noCodeRegex = /^[^<>]+$/;
 
         const body = request.body()
         const name: string = body.name
@@ -122,6 +124,20 @@ export default class AccountsController {
             return response.status(403).json({
                 status: 403,
                 msg: 'Usuário não pode conter espaços ou caracteres especiais exceto underline(_) e ponto(.).',
+            })
+        }
+
+        if (!noCodeRegex.test(body.email)) {
+          return response.status(200).json({
+                status: 406,
+                msg: 'Formato de e-mail inválido.',
+            })
+        }
+
+        if(!emailRegex.test(body.email) && body.email !== '') {
+            return response.status(200).json({
+                status: 403,
+                msg: 'Formato de e-mail inválido.',
             })
         }
         const accountExist: Accounts | null = await Accounts.findBy('name', name)
@@ -317,8 +333,17 @@ export default class AccountsController {
 
     public async update({ params, request, response }: HttpContextContract) {
         const regex = /^[A-Za-z_][A-Za-z0-9._]*$/
+        const emailRegex = /^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]+$/g;
         const body = request.body()
         const user: Accounts | null = await Accounts.findBy('id', params.id)
+
+        if(body.email !== null && !emailRegex.test(body.email) && body.email !== '') {
+            return response.status(200).json({
+                status: 403,
+                msg: 'Formato de e-mail inválido.',
+            })
+        }
+
 
         if (!regex.test(body.name)) {
             return response.status(200).json({
@@ -350,7 +375,7 @@ export default class AccountsController {
             const newName: string = body.name !== user.name ? body.name : user.name
             const newPass: string = body.password === undefined || body.password === user.password ? user.password : body.password
             // const userEMail: string = this.removeNull(user.email)
-            const newEmail: string = body.email === user.email || body.email === null || body.email === undefined ? user.email : body.email
+            const newEmail: string = body.email === user.email || body.email === undefined ? user.email : body.email === null ? '' : body.email
             const newNameFind = await Accounts.findBy('name', newName)
             const newNameExist = newNameFind !== null && newName !== user.name
             const newEmailFind = await Accounts.findBy('email', newEmail)
@@ -437,7 +462,7 @@ export default class AccountsController {
 
     public async updateAdmin({ params, request, response }: HttpContextContract) {
         const regex = /^[A-Za-z_][A-Za-z0-9._]*$/
-
+        const emailRegex = /^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]+$/g;
         const body = request.body()
         const user: Accounts | null = await Accounts.findBy('id', params.id)
 
@@ -445,6 +470,12 @@ export default class AccountsController {
             return response.status(403).json({
                 status: 403,
                 msg: 'Usuário não pode conter espaços ou caracteres especiais exceto underline(_) e ponto(.).',
+            })
+        }
+        if(body.email !== null && !emailRegex.test(body.email) && body.email !== '') {
+            return response.status(200).json({
+                status: 403,
+                msg: 'Formato de e-mail inválido.',
             })
         }
 
