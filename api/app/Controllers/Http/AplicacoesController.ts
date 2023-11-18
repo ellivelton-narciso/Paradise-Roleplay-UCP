@@ -203,7 +203,7 @@ export default class AplicacoesController {
     })
 
     if (validHeader && tokenOK) {
-      const aplicacoes = await Database.from('aplicacoes').where('status', -1)
+      const aplicacoes = await Database.from('aplicacoes')
       return response.response.status(200).json({
         status: 200,
         aplicacoes,

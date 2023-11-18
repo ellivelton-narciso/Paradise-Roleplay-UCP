@@ -78,6 +78,7 @@ export const alteraHeader = ()=> {
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="adminDropdown">
                                   <li><a class="dropdown-item" href="aplicacoes.html">Aplicações</a></li>
+                                  <li><a class="dropdown-item" href="ver_aplicacoes.html">Aplicações Aceitas</a></li>
                                 </ul>
                               </li>
                             `
@@ -91,6 +92,7 @@ export const alteraHeader = ()=> {
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="adminDropdown">
                                   <li><a class="dropdown-item" href="aplicacoes.html">Aplicações</a></li>
+                                  <li><a class="dropdown-item" href="ver_aplicacoes.html">Aplicações Aceitas</a></li>
                                   <li><a class="dropdown-item" href="todos_usuarios.html">Todos os usuários</a></li>
                                   <li><a class="dropdown-item" href="todos_personagens.html">Todos os personagens</a></li>
                                   <li><a class="dropdown-item" href="logs.html">Logs</a></li>

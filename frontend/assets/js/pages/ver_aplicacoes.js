@@ -24,7 +24,7 @@ $.ajax({
                 $('#loading').hide();
                 switch (res.status) {
                     case 200:
-                        const data = res.aplicacoes.filter(filtro => filtro.status == '-1')
+                        const data = res.aplicacoes.filter(filtro => filtro.status == '1')
                         const table = $('<table id="tabela" class="table table-striped table-bordered"></table>').appendTo('.table-responsive');
 
                         table.DataTable({
@@ -56,14 +56,6 @@ $.ajax({
                                     }
                                 },
                                 {
-                                    data: 'mensagem',
-                                    title: 'Mensagem',
-                                    render: function (data) {
-                                        const trimmedMessage = data.split(' ').slice(0, 8).join(' ');
-                                        return trimmedMessage + (data.length > trimmedMessage.length ? '...' : '');
-                                    }
-                                },
-                                {
                                     data: 'status',
                                     title: 'Opções',
                                     render: function () {
@@ -78,10 +70,11 @@ $.ajax({
                             const rowData = table.row($(this).parents('tr')).data();
                             const appId = rowData.id;
 
-                            const avaliacaoApp = data.filter(filtro => filtro.id === appId)
-                            localStorage.setItem('avaliacaoApp', JSON.stringify(avaliacaoApp[0]))
+                            const appEdit = data.filter(filtro => filtro.id === appId)
+                            localStorage.setItem('appEdita', JSON.stringify(appEdit[0]))
+                            localStorage.setItem('back', JSON.stringify({url: 'ver_aplicacoes.html'}))
 
-                            window.location.href = 'personagem-avaliar.html';
+                            window.location.href = 'personagem-criar.html';
                         });
                         break;
                     case 404:

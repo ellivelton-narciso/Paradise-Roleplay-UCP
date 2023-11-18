@@ -16,6 +16,7 @@ const disableAll = () => {
 
 const personagensSemAplicacao = JSON.parse(localStorage.getItem('personagensSemAplicacao'));
 const appEditar = JSON.parse(localStorage.getItem('appEdita'));
+const btnBack = JSON.parse(localStorage.getItem('back'));
 
 if (personagensSemAplicacao !== null) {
     nomeInput.val(personagensSemAplicacao[0].name.split('_')[0]);
@@ -193,3 +194,7 @@ const novaAplicacao =  () => {
 $('#enviarAplicacao').click(()=> {
     novaAplicacao()
 });
+
+if (btnBack !== null) {
+    $('#editBtn a').attr('href', btnBack.url)
+}
