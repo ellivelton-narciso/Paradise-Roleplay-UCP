@@ -9,8 +9,11 @@ Route.group(()=>{
 
   Route.post('/register', 'AccountsController.register')
   Route.post('/login', 'AccountsController.login')
+
   Route.post('/recovery', 'AccountsController.recovery')
+  Route.post('/recovery/code/:id', 'AccountsController.checkCode')
   Route.post('/recovery/:id', 'AccountsController.changePass')
+
   Route.get('/users', 'AccountsController.showAll')
   Route.get('/users/:id', 'AccountsController.show').where('id', /^[0-9]+$/)
   Route.post('/users/:id', 'AccountsController.update').where('id', /^[0-9]+$/)

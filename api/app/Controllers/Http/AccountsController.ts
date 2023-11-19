@@ -570,7 +570,7 @@ export default class AccountsController {
 
     public async recovery ({request, response}: HttpContextContract) {
       const email: string = request.body().email
-      const emailRegex = /[a-z0-9]+@[a-z0-9]+\.[a-z]+/gi;
+      const emailRegex = /^[a-z0-9_.-]+@[a-z0-9.-]+\.[a-z]+$/i
 
       if(!emailRegex.test(email)) {
         return response.status(400).json({
@@ -588,12 +588,14 @@ export default class AccountsController {
       }
       try {
         const tempoDefaultExpire = ms('1h')
-        const existCode = await Recovery.findBy('id_user', user.id)
+        const expirationDateTime = DateTime.local().plus({ milliseconds: tempoDefaultExpire });
+        const existCode = await Recovery.query().where('id_user', user.id).where('used', 0).first()
 
         if (existCode) {
-          const isExpired = this.isTokenExpired(existCode.expiresAt)
+          const isExpired: boolean = this.isTokenExpired(existCode.expiresAt)
+          const isOverAttempt: boolean = existCode.attempt === 3
 
-          if (isExpired) {
+          if (isExpired || isOverAttempt) {
             await Recovery.query().where('code', existCode.code).delete()
             function gerarLetraAleatoria() {
               const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -606,15 +608,10 @@ export default class AccountsController {
             function gerarCodigoAleatorio() {
               let codigo = '';
 
-              // Gera 6 dígitos
               for (let i = 0; i < 6; i++) {
                 codigo += gerarDigitoAleatorio();
               }
-
-              // Adiciona 1 letra
               codigo += gerarLetraAleatoria();
-
-              // Embaralha os caracteres para tornar a sequência menos previsível (opcional)
               codigo = codigo.split('').sort(() => Math.random() - 0.5).join('');
 
               return codigo;
@@ -622,12 +619,13 @@ export default class AccountsController {
 
             const codigoGerado = gerarCodigoAleatorio();
 
-            await Recovery.create({
+            await Recovery.updateOrCreate({code: codigoGerado},{
               idUser: user.id,
               code: codigoGerado,
               used: 0,
               expiresAt: tempoDefaultExpire
             })
+            // Envia o E-mail
             try {
               const html = `
                 <html lang='pt-BR'>
@@ -656,7 +654,7 @@ export default class AccountsController {
                 </head>
                 <body>
                   <div class='container'>
-                    <p>Use este código para recuperar sua senha: ${codigoGerado}</p>
+                    <p>Use este código para recuperar sua senha: ${codigoGerado}, só é válido por uma hora.</p>
                   </div>
                 </body>
                 </html>
@@ -666,30 +664,268 @@ export default class AccountsController {
                 'Recuperação de senha',
                 html,
               )
+              return response.status(200).json({
+                status: 200,
+                msg: 'Código enviado por e-mail',
+                userID: user.id
+
+              })
               } catch (e) {
-                  return response.status(500).json({
-                      status: 500,
-                      msg: 'Erro ao enviar email',
-                      erro: e,
-                  })
-                }
-              }
+              return response.status(500).json({
+                  status: 500,
+                  msg: 'Erro ao enviar email',
+                  erro: e,
+              })
             }
+          } else {
+            try {
+              const html = `
+                <html lang='pt-BR'>
+                <head>
+                  <title>Paradise Roleplay - Recuperação de senhas</title>
+                  <style>
+                    body {
+                      font-family: Arial, sans-serif;
+                      background-color: #f2f2f2;
+                      margin: 0;
+                      padding: 0;
+                    }
+                    .container {
+                      max-width: 600px;
+                      margin: 0 auto;
+                      padding: 20px;
+                      background-color: #ffffff;
+                      border-radius: 10px;
+                      box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+                    }
+                    p {
+                      color: #333;
+                      font-size: 16px;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <div class='container'>
+                    <p>Use este código para recuperar sua senha: ${existCode.code}, só é válido por uma hora.</p>
+                  </div>
+                </body>
+                </html>
+              `
+              await EmailService.sendMail(
+                email,
+                'Recuperação de senha',
+                html,
+              )
+              return response.status(200).json({
+                status: 200,
+                msg: 'Código enviado por e-mail',
+                userID: user.id
+
+              })
+              } catch (e) {
+              return response.status(500).json({
+                  status: 500,
+                  msg: 'Erro ao enviar email',
+                  erro: e,
+              })
+            }
+          }
+
+        } else {
+            function gerarLetraAleatoria() {
+              const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+              const indiceAleatorio = Math.floor(Math.random() * alfabeto.length);
+              return alfabeto[indiceAleatorio];
+            }
+            function gerarDigitoAleatorio() {
+              return Math.floor(Math.random() * 10).toString();
+            }
+            function gerarCodigoAleatorio() {
+              let codigo = '';
+
+              for (let i = 0; i < 6; i++) {
+                codigo += gerarDigitoAleatorio();
+              }
+              codigo += gerarLetraAleatoria();
+              codigo = codigo.split('').sort(() => Math.random() - 0.5).join('');
+
+              return codigo;
+            }
+
+            const codigoGerado = gerarCodigoAleatorio();
+
+            await Recovery.create({
+              idUser: user.id,
+              code: codigoGerado,
+              used: 0,
+              expiresAt: expirationDateTime
+            })
+            // Envia o E-mail
+            try {
+              const html = `
+                <html lang='pt-BR'>
+                <head>
+                  <title>Paradise Roleplay - Recuperação de senhas</title>
+                  <style>
+                    body {
+                      font-family: Arial, sans-serif;
+                      background-color: #f2f2f2;
+                      margin: 0;
+                      padding: 0;
+                    }
+                    .container {
+                      max-width: 600px;
+                      margin: 0 auto;
+                      padding: 20px;
+                      background-color: #ffffff;
+                      border-radius: 10px;
+                      box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+                    }
+                    p {
+                      color: #333;
+                      font-size: 16px;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <div class='container'>
+                    <p>Use este código para recuperar sua senha: ${codigoGerado}, só é válido por uma hora.</p>
+                  </div>
+                </body>
+                </html>
+              `
+              await EmailService.sendMail(
+                email,
+                'Recuperação de senha',
+                html,
+              )
+              return response.status(200).json({
+                status: 200,
+                msg: 'Código enviado por e-mail',
+                userID: user.id
+
+              })
+              } catch (e) {
+              return response.status(500).json({
+                  status: 500,
+                  msg: 'Erro ao enviar email',
+                  erro: e,
+              })
+            }
+        }
+
       } catch (e){
+        console.log(e)
         return response.status(500).json({
           status: 500,
-          msg: 'Erro Interno'
+          msg: 'Erro Interno',
+          erro: e
+        })
+      }
+    }
+    public async checkCode({params, request, response}: HttpContextContract){
+      const code = request.body().code
+      const regexChangePass = /^[A-Z0-9]+$/;
+      try {
+        const user = await Recovery.query().where('id_user', params.id).where('used', 0).first()
+        if (!user) {
+          return response.status(403).json({
+            status: 403,
+            msg: 'Usuário não possui nenhum código para recuperação'
+          })
+        }
+
+        if (user.attempt >= 3) {
+          await Recovery.query().where('id_user', params.id).where('used', 0).where('code', user.code).delete()
+          return response.status(403).json({
+            status: 403,
+            msg: 'Número de tentativas esgotado, requisite um novo código.'
+          })
+        }
+
+        if (!regexChangePass.test(code)) {
+          await Recovery.updateOrCreate({
+            idUser: params.id,
+            used: 0,
+          }, {
+            attempt: user.attempt++
+          })
+          return response.status(400).json({
+            status: 400,
+            msg: `Código Incorreto. Tentativas: ${user.attempt++} de 3`
+          })
+        }
+
+        const existCode = await Recovery.query().where('code', code).where('id_user', params.id).where('used', 0).first()
+        if (!existCode) {
+          await Recovery.updateOrCreate({
+            idUser: params.id,
+            used: 0,
+          }, {
+            attempt: user.attempt++
+          })
+          return response.status(400).json({
+            status: 400,
+            msg: `Código Incorreto. Tentativas: ${user.attempt++} de 3`
+          })
+        }
+
+        if (this.isTokenExpired(existCode.expiresAt || existCode.attempt >= 3)){
+          await Recovery.query().where('code', code).delete()
+          return response.status(401).json({
+            status: 401,
+            msg: 'Código expirado, solicite novamente.'
+          })
+        }
+        await Recovery.updateOrCreate({'id': existCode.id}, {used: 1})
+        return response.status(200).json({
+          status: 200,
+          msg: 'Código recuperado.',
+          'code': code
+        })
+      } catch (e) {
+        return response.status(500).json({
+          status: 500,
+          msg: 'Erro Interno',
+          error: e
+        })
+      }
+    }
+    public async changePass({request, response}: HttpContextContract) {
+      const code = request.body().code
+      const newPass = request.body().password
+
+      const regexChangePass = /^[A-Z0-9]+$/;
+      if (!regexChangePass.test(code)) {
+        return response.status(401).json({
+          status: 401,
+          msg: 'Código Inválido'
         })
       }
 
-
-
-
-
-
-
+      try {
+        const validCode = await Recovery.query().where('code', code).where('used', 1).first()
+        if (!validCode) {
+          return response.status(401).json({
+            status: 401,
+            msg: 'Código Inválido'
+          })
+        }
+        await Accounts.updateOrCreate({id: validCode.idUser}, {
+          password: newPass
+        })
+        await Recovery.query().where('code', code).delete()
+        return response.status(200).json({
+          status: 200,
+          msg: 'Senha Alterada, Faça Login utilizando a nova senha.'
+        })
+      } catch (e) {
+        return response.status(500).json({
+          status: 500,
+          msg: 'Erro Interno.'
+        })
+      }
     }
-
 
     /*private removeNull(value : string | null ) : string {
       if (value === null) {

@@ -14,6 +14,9 @@ export default class Recovery extends BaseModel {
   @column()
   public used: number
 
+  @column()
+  public attempt: number
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
