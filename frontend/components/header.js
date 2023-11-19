@@ -31,6 +31,9 @@ const navBarLogado = `
           <li class="nav-item">
             <a class="nav-link" href="https://paradiseroleplay.forumeiros.com/">Fórum</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="loja.html">Loja</a>
+          </li>
            <li class="nav-item">
             <a class="nav-link" href="index.html">Personagens</a>
           </li>
