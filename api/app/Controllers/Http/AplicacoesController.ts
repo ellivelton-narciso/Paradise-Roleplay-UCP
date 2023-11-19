@@ -421,7 +421,8 @@ export default class AplicacoesController {
               }),
             })
             if (jaAprovado) {
-              if(solicitante.email !== '' && solicitante.email !== 'Undefined') {
+              // @ts-ignore
+              if(solicitante.email !== '' || solicitante.email !== 'Undefined') {
                 try {
                 const html = `
                   <html lang='pt-BR'>
@@ -689,7 +690,8 @@ export default class AplicacoesController {
                 aprovado: status === 1 ? 'Sim' : 'Não'
               })
             })
-            if(solicitante.email !== '' && solicitante.email !== 'Undefined') {
+            // @ts-ignore
+            if(solicitante.email !== '' || solicitante.email !== 'Undefined') {
                 try {
                 const html = `
                   <html lang='pt-BR'>
@@ -791,6 +793,10 @@ export default class AplicacoesController {
       })
     }
 
+  }
+
+  public async recovery ({request, response}): HttpContextContract {
+    
   }
 
   private gerarNumerosAleatoriosString(max: number): string {
