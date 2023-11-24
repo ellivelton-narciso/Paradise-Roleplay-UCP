@@ -180,7 +180,7 @@ export default class AccountsController {
                 msg: 'Formato de e-mail inválido.',
             })
         }
-        const accountExist: Accounts | null = await Accounts.findBy('name', name)
+        const accountExist = await Accounts.query().whereRaw('LOWER("name") = ?', [name.toLowerCase()]).first();
         const emailExist: Accounts | null = await Accounts.findBy('email', email)
 
         if (!name || !password) {
