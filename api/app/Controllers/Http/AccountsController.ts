@@ -12,8 +12,8 @@ import { MercadoPagoConfig, Preference } from 'mercadopago'
 import { v4 } from 'uuid'
 import Compra from 'App/Models/Compra'
 import * as console from 'console'
-import { promisify } from 'util';
-import { exec } from 'child_process';
+/*import { promisify } from 'util';
+import { exec } from 'child_process';*/
 
 
 export default class AccountsController {
@@ -21,11 +21,8 @@ export default class AccountsController {
         const { name, password } = request.only(['name', 'password'])
         const ipv4 = request.ip()
 
-        const executeCommand = promisify(exec);
-        const retirarBL: string = `iptables -D INPUT -s ${ipv4} -j DROP`
-        const resetarDROP: string = `iptables -D INPUT -p udp --dport 7777 -j DROP`
-        const liberarIP:string  = `iptables -A INPUT -p udp --dport 7777 -s ${ipv4} -j ACCEPT`;
-        const blockRestante: string = `iptables -A INPUT -p udp --dport 7777 -j DROP`
+        /*const executeCommand = promisify(exec);
+        const retirarBL: string = `iptables -D INPUT -s ${ipv4} -j DROP`*/
 
     try {
       const user = await Accounts.findBy('name', name)
@@ -37,7 +34,7 @@ export default class AccountsController {
         })
       }
 
-      const qtdPersonagens = [user.character0, user.character1, user.character2].filter(k => k !== -1).length
+      // const qtdPersonagens = [user.character0, user.character1, user.character2].filter(k => k !== -1).length
 
       if (user.password !== password) {
         return response.status(401).json({
@@ -69,8 +66,7 @@ export default class AccountsController {
                         // Obtém o token gerado após a autenticação
                         const token = auth.use('api').token!
 
-                      if (qtdPersonagens > 0) {
-
+                      /*if (qtdPersonagens > 0) {
                         for (let errIP = false; !errIP;) {
                           try {
                             await executeCommand(retirarBL);
@@ -79,11 +75,7 @@ export default class AccountsController {
                             errIP = true;
                           }
                         }
-
-                        await executeCommand(resetarDROP);
-                        await executeCommand(liberarIP);
-                        await executeCommand(blockRestante);
-                      }
+                      }*/
 
                         return response.status(200).json({
                           'status': 200,
@@ -103,7 +95,7 @@ export default class AccountsController {
                         })
                     }
                 }
-                if (qtdPersonagens > 0) {
+                /*if (qtdPersonagens > 0) {
                   for (let errIP = false; !errIP;) {
                     try {
                       await executeCommand(retirarBL);
@@ -112,11 +104,7 @@ export default class AccountsController {
                       errIP = true;
                     }
                   }
-
-                  await executeCommand(resetarDROP);
-                  await executeCommand(liberarIP);
-                  await executeCommand(blockRestante);
-                }
+                }*/
                 return response.status(200).json({
                     'status': 200,
                     'user': {
@@ -136,7 +124,7 @@ export default class AccountsController {
             // Obtém o token gerado após a autenticação
             const token = auth.use('api').token!
 
-            if (qtdPersonagens > 0) {
+            /*if (qtdPersonagens > 0) {
               for (let errIP = false; !errIP;) {
                 try {
                   await executeCommand(retirarBL);
@@ -145,11 +133,7 @@ export default class AccountsController {
                   errIP = true;
                 }
               }
-
-              await executeCommand(resetarDROP);
-              await executeCommand(liberarIP);
-              await executeCommand(blockRestante);
-            }
+            }*/
 
             return response.status(200).json({
                 'status': 200,
