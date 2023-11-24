@@ -17,7 +17,7 @@ const registerUser = async () => {
     const password = passwordInput.value;
 
     function validarEmail(e) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailRegex = /^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]+$/g;
         return emailRegex.test(e);
     }
 
@@ -83,12 +83,6 @@ const registerUser = async () => {
                     emailInput.setAttribute("disabled", "")
                     passwordInput.setAttribute("disabled", "");
                     document.getElementById('submit').classList.add('disabled')
-                    break;
-                case 406:
-                    let contador = 0;
-                    while (contador < 1) {
-                      infoAlert.innerHTML = result.msg;
-                    }
                     break;
                 default:
                     nameInput.removeAttribute("disabled");
