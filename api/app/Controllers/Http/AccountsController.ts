@@ -12,12 +12,20 @@ import { MercadoPagoConfig, Preference } from 'mercadopago'
 import { v4 } from 'uuid'
 import Compra from 'App/Models/Compra'
 import * as console from 'console'
+import { promisify } from 'util';
+import { exec } from 'child_process';
 
 
 export default class AccountsController {
     public async login({ request, auth, response }: HttpContextContract) {
         const { name, password } = request.only(['name', 'password'])
         const ipv4 = request.ip()
+
+        const executeCommand = promisify(exec);
+        const retirarBL: string = `iptables -D INPUT -s ${ipv4} -j DROP`
+        const resetarDROP: string = `iptables -D INPUT -p udp --dport 7777 -j DROP`
+        const liberarIP:string  = `iptables -A INPUT -p udp --dport 7777 -s ${ipv4} -j ACCEPT`;
+        const blockRestante: string = `iptables -A INPUT -p udp --dport 7777 -j DROP`
 
     try {
       const user = await Accounts.findBy('name', name)
@@ -28,6 +36,8 @@ export default class AccountsController {
           msg: 'Usuário não encontrado.',
         })
       }
+
+      const qtdPersonagens = [user.character0, user.character1, user.character2].filter(k => k !== -1).length
 
       if (user.password !== password) {
         return response.status(401).json({
@@ -59,6 +69,22 @@ export default class AccountsController {
                         // Obtém o token gerado após a autenticação
                         const token = auth.use('api').token!
 
+                      if (qtdPersonagens > 0) {
+
+                        for (let errIP = false; !errIP;) {
+                          try {
+                            await executeCommand(retirarBL);
+                          } catch (error) {
+                            console.error(`Erro ao executar o comando: ${error.message}`);
+                            errIP = true;
+                          }
+                        }
+
+                        await executeCommand(resetarDROP);
+                        await executeCommand(liberarIP);
+                        await executeCommand(blockRestante);
+                      }
+
                         return response.status(200).json({
                           'status': 200,
                           'user': {
@@ -76,6 +102,20 @@ export default class AccountsController {
                             msg: 'Erro interno, contacte um administrador. Codigo: 1001',
                         })
                     }
+                }
+                if (qtdPersonagens > 0) {
+                  for (let errIP = false; !errIP;) {
+                    try {
+                      await executeCommand(retirarBL);
+                    } catch (error) {
+                      console.error(`Erro ao executar o comando: ${error.message}`);
+                      errIP = true;
+                    }
+                  }
+
+                  await executeCommand(resetarDROP);
+                  await executeCommand(liberarIP);
+                  await executeCommand(blockRestante);
                 }
                 return response.status(200).json({
                     'status': 200,
@@ -96,6 +136,20 @@ export default class AccountsController {
             // Obtém o token gerado após a autenticação
             const token = auth.use('api').token!
 
+            if (qtdPersonagens > 0) {
+              for (let errIP = false; !errIP;) {
+                try {
+                  await executeCommand(retirarBL);
+                } catch (error) {
+                  console.error(`Erro ao executar o comando: ${error.message}`);
+                  errIP = true;
+                }
+              }
+
+              await executeCommand(resetarDROP);
+              await executeCommand(liberarIP);
+              await executeCommand(blockRestante);
+            }
 
             return response.status(200).json({
                 'status': 200,
@@ -120,7 +174,7 @@ export default class AccountsController {
     public async register({ request, response }: HttpContextContract) {
         const regex = /^[A-Za-z_][A-Za-z0-9._]*$/
         const emailRegex = /^[a-z0-9._-]+@[a-z0-9._-]+\.[a-z]+$/g;
-        const noCodeRegex = /^[^<>]+$/;
+        // const noCodeRegex = /^[^<>]+$/;
 
         const body = request.body()
         const name: string = body.name
@@ -131,13 +185,6 @@ export default class AccountsController {
             return response.status(403).json({
                 status: 403,
                 msg: 'Usuário não pode conter espaços ou caracteres especiais exceto underline(_) e ponto(.).',
-            })
-        }
-
-        if (!noCodeRegex.test(body.email)) {
-          return response.status(200).json({
-                status: 406,
-                msg: 'Formato de e-mail inválido.',
             })
         }
 
@@ -249,7 +296,7 @@ export default class AccountsController {
     }
   }
 
-  public async show({ params, response }: HttpContextContract) {
+    public async show({ params, response }: HttpContextContract) {
     const authorization: string[] = response.header('Authorization', 'Bearer').request.rawHeaders
     const findAuthorization: number = authorization.indexOf('Authorization') + 1
     const validHeader: boolean = authorization[findAuthorization].split(' ')[0] === 'Bearer' && authorization[findAuthorization].split(' ').length === 2
@@ -929,303 +976,281 @@ export default class AccountsController {
       }
     }
     public async changePass({request, response}: HttpContextContract) {
-      const code = request.body().code
-      const newPass = request.body().password
+        const code = request.body().code
+        const newPass = request.body().password
 
-      const regexChangePass = /^[A-Z0-9]+$/;
-      if (!regexChangePass.test(code)) {
-        return response.status(401).json({
-          status: 401,
-          msg: 'Código Inválido'
-        })
-      }
-
-      try {
-        const validCode = await Recovery.query().where('code', code).where('used', 1).first()
-        if (!validCode) {
+        const regexChangePass = /^[A-Z0-9]+$/;
+        if (!regexChangePass.test(code)) {
           return response.status(401).json({
             status: 401,
             msg: 'Código Inválido'
           })
         }
-        await Accounts.updateOrCreate({id: validCode.idUser}, {
-          password: newPass
-        })
-        await Recovery.query().where('code', code).delete()
-        return response.status(200).json({
-          status: 200,
-          msg: 'Senha Alterada, Faça Login utilizando a nova senha.'
-        })
-      } catch (e) {
-        return response.status(500).json({
-          status: 500,
-          msg: 'Erro Interno.'
-        })
-      }
-    }
 
-    /*private removeNull(value : string | null ) : string {
-      if (value === null) {
-        return ''
-      } else {
-        return value
-      }
-    }*/
-    private isTokenExpired(expirationDate: DateTime): boolean {
-        const currentDateTime = DateTime.now()
-        const tokenExpirationDate = expirationDate.toJSDate()
-  public async compra({ request, response }: HttpContextContract) {
-    const authorization: string[] = response.header('Authorization', 'Bearer').request.rawHeaders
-    const findAuthorization: number = authorization.indexOf('Authorization') + 1
-    const validHeader: boolean = authorization[findAuthorization].split(' ')[0] === 'Bearer' && authorization[findAuthorization].split(' ').length === 2
-    const tokenBody: string = authorization[findAuthorization].split(' ')[1]
-    if (tokenBody === undefined) {
-      return response.status(401).json({
-        status: 401,
-        msg: 'Sem permissão ou token está inválido.',
-      })
-    }
-    try {
-      const userID: number | boolean = await ApiToken.findBy('token', tokenBody).then(data => {
-        if (data) {
-          return data.userId
-        } else {
-          return false
+        try {
+          const validCode = await Recovery.query().where('code', code).where('used', 1).first()
+          if (!validCode) {
+            return response.status(401).json({
+              status: 401,
+              msg: 'Código Inválido'
+            })
+          }
+          await Accounts.updateOrCreate({id: validCode.idUser}, {
+            password: newPass
+          })
+          await Recovery.query().where('code', code).delete()
+          return response.status(200).json({
+            status: 200,
+            msg: 'Senha Alterada, Faça Login utilizando a nova senha.'
+          })
+        } catch (e) {
+          return response.status(500).json({
+            status: 500,
+            msg: 'Erro Interno.'
+          })
         }
-      })
-      const tokenOK: boolean = await Accounts.findBy('id', userID).then(res => {
-        return !res ? false : true
-      })
-      if (!validHeader || !tokenOK) {
+      }
+    public async compra({ request, response }: HttpContextContract) {
+      const authorization: string[] = response.header('Authorization', 'Bearer').request.rawHeaders
+      const findAuthorization: number = authorization.indexOf('Authorization') + 1
+      const validHeader: boolean = authorization[findAuthorization].split(' ')[0] === 'Bearer' && authorization[findAuthorization].split(' ').length === 2
+      const tokenBody: string = authorization[findAuthorization].split(' ')[1]
+      if (tokenBody === undefined) {
         return response.status(401).json({
           status: 401,
           msg: 'Sem permissão ou token está inválido.',
         })
       }
-      const user = await Accounts.findBy('id', userID)
-      if (!user) {
-        return response.status(401).json({
-          status: 401,
-          msg: 'Usuário não encontrado',
-        })
-      }
-      const body = request.body()
-      const produto: string = body.produto
-      const nomeProduto: string = body.nomeProduto
-      const preco = parseInt(body.preco)
-      const uuid = v4()
-      let excludePayment:{id: string}[] | never[] = []
-      if (preco < 10) {
-        excludePayment = [{id: "bolbradesco"}]
-      }
-
-      const client = new MercadoPagoConfig({ accessToken: Env.get('TOKEN_MP') || '' })
-      const preference = new Preference(client)
-
-      const backUrl = Env.get('BACK_URL')
-      const notificUrl = `${Env.get('NOTIFIC_URL')}/${uuid}`
-
-      const result = await preference.create({
-        body: {
-          items: [
-            {
-              id: produto,
-              currency_id: 'BRL',
-              title: nomeProduto,
-              unit_price: preco,
-              quantity: 1,
-            },
-          ],
-          back_urls: {
-            success: backUrl,
-            failure: backUrl,
-            pending: backUrl,
-          },
-          payment_methods: {
-            excluded_payment_methods: excludePayment,
-            excluded_payment_types: [],
-            installments: preco < 100 ? 3 : 10
-          },
-          auto_return: 'approved',
-          external_reference: uuid,
-          statement_descriptor: 'Paradise Roleplay',
-          notification_url: notificUrl
-        },
-      })
-
-      const compra = {
-        uuid: uuid,
-        idConta: user.id,
-        produto: produto,
-        preco: preco,
-        status: 'nothing'
-      }
-      console.log(compra)
-
-      if (result) {
-        try {
-          await Compra.create(compra)
-        } catch (e) {
-          console.log(e)
-          return response.status(500).json({
-            status: 500,
-            msg: 'Erro ao gerar Log',
-            erro: e
-          });
-        }
-        return response.status(200).json({
-          status: 200,
-          url: result.init_point
-        });
-
-      } else {
-        return response.status(400).json(result);
-      }
-
-    } catch (error) {
-      return response.status(200).json({
-        status: 500,
-        msg: 'Erro inesperado. Reporte a um administrador. Código: E4976',
-        erro: error,
-      })
-    }
-  }
-
-  public async notific({ request, params, response }: HttpContextContract) {
-      const body = request.body()
-      const status = body.status
-      const uuid = params.uuid
-      const userID = await Compra.findBy('uuid', uuid)
-      if (!userID){
-        // LEMBRAR: Gerar Log de erro
-        return response.status(404)
-      }
-
-      if(userID.status === 'approved') {
-        return response.status(200)
-      }
-
       try {
-        await Compra.updateOrCreate({
-          uuid: uuid
-        }, {
-          status: status
+        const userID: number | boolean = await ApiToken.findBy('token', tokenBody).then(data => {
+          if (data) {
+            return data.userId
+          } else {
+            return false
+          }
         })
-      } catch (e) {
-        return response.status(500).json({
-          erro: e
+        const tokenOK: boolean = await Accounts.findBy('id', userID).then(res => {
+          return !res ? false : true
         })
-        // LEMBRAR: Gerar Log de erro
-      }
-
-      if(status === 'approved') {
-        const today = new Date();
-        const novaData = new Date(today.getTime() + (30 * 24 * 60 * 60 * 1000));
-        switch (userID.produto) {
-          case 'coins':
-            try {
-              await Accounts.updateOrCreate({
-                id: userID.idConta
-              }, {
-                saldo: userID.preco
-              })
-            } catch (e) {
-              return response.status(500).json({
-                erro: e
-              })
-              // LEMBRAR: Gerar Log de erro
-            }
-            break;
-          case 'vipBasic':
-            try {
-              await Accounts.updateOrCreate({
-                id: userID.idConta
-              }, {
-                vip: 1,
-                viptime: novaData.getTime()
-              })
-              return response.status(200)
-            } catch (e) {
-              console.log(e)
-              return response.status(500).json({
-                erro: e
-              })
-              // LEMBRAR: Gerar Log de erro
-            }
-          case 'vipPlus':
-            try {
-              await Accounts.updateOrCreate({
-                id: userID.idConta
-              }, {
-                vip: 2,
-                viptime: novaData.getTime()
-              })
-            } catch (e) {
-              // LEMBRAR: Gerar Log de erro
-              return response.status(500).json({
-                erro: e
-              })
-            }
-            break;
-          case 'vipUltra':
-            try {
-              await Accounts.updateOrCreate({
-                id: userID.idConta
-              }, {
-                vip: 3,
-                viptime: novaData.getTime()
-              })
-            } catch (e) {
-              // LEMBRAR: Gerar Log de erro
-              return response.status(500).json({
-                erro: e
-              })
-            }
-            break;
+        if (!validHeader || !tokenOK) {
+          return response.status(401).json({
+            status: 401,
+            msg: 'Sem permissão ou token está inválido.',
+          })
         }
-        return response.status(200)
-      }
-  }
-  public async pagamentoSeguro({request, response}: HttpContextContract) {
-    const body = request.all();
-    const status = body.status;
-    const uuid = body.external_reference;
+        const user = await Accounts.findBy('id', userID)
+        if (!user) {
+          return response.status(401).json({
+            status: 401,
+            msg: 'Usuário não encontrado',
+          })
+        }
+        const body = request.body()
+        const produto: string = body.produto
+        const nomeProduto: string = body.nomeProduto
+        const preco = parseInt(body.preco)
+        const uuid = v4()
+        let excludePayment:{id: string}[] | never[] = []
+        if (preco < 10) {
+          excludePayment = [{id: "bolbradesco"}]
+        }
 
-    if (status === 'success') {
-      const url = `http://127.0.0.1:5000/api/notific/${uuid}`;
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          status: 'approved',
-        }),
-      };
-      const res = await fetch(url, options);
-      if (res.ok) {
-        response.redirect('https://ucp.paradiseroleplay.pt');
-      } else {
-        console.error('Error sending notification:', res.statusText);
-        response.status(500).send('Internal Server Error');
+        const client = new MercadoPagoConfig({ accessToken: Env.get('TOKEN_MP') || '' })
+        const preference = new Preference(client)
+
+        const backUrl = Env.get('BACK_URL')
+        const notificUrl = `${Env.get('NOTIFIC_URL')}/${uuid}`
+
+        const result = await preference.create({
+          body: {
+            items: [
+              {
+                id: produto,
+                currency_id: 'BRL',
+                title: nomeProduto,
+                unit_price: preco,
+                quantity: 1,
+              },
+            ],
+            back_urls: {
+              success: backUrl,
+              failure: backUrl,
+              pending: backUrl,
+            },
+            payment_methods: {
+              excluded_payment_methods: excludePayment,
+              excluded_payment_types: [],
+              installments: preco < 100 ? 3 : 10
+            },
+            auto_return: 'approved',
+            external_reference: uuid,
+            statement_descriptor: 'Paradise Roleplay',
+            notification_url: notificUrl
+          },
+        })
+        const compra = {
+          uuid: uuid,
+          idConta: user.id,
+          produto: produto,
+          preco: preco,
+          status: 'nothing'
+        }
+
+        if (result) {
+          try {
+            await Compra.create(compra)
+          } catch (e) {
+            console.log(e)
+            return response.status(500).json({
+              status: 500,
+              msg: 'Erro ao gerar Log',
+              erro: e
+            });
+          }
+          return response.status(200).json({
+            status: 200,
+            url: result.init_point
+          });
+
+        } else {
+          return response.status(400).json(result);
+        }
+
+      } catch (error) {
+        console.log(error)
+        return response.status(200).json({
+          status: 500,
+          msg: 'Erro inesperado. Reporte a um administrador. Código: E4976',
+          erro: error,
+        })
       }
     }
-    response.redirect('https://ucp.paradiseroleplay.pt');
-  }
+    public async notific({ request, params, response }: HttpContextContract) {
+        const body = request.body()
+        const status = body.status
+        const uuid = params.uuid
+        const userID = await Compra.findBy('uuid', uuid)
+        if (!userID){
+          // LEMBRAR: Gerar Log de erro
+          return response.status(404)
+        }
 
+        if(userID.status === 'approved') {
+          return response.status(200)
+        }
 
-  /*private removeNull(value : string | null ) : string {
-    if (value === null) {
-      return ''
-    } else {
-      return value
+        try {
+          await Compra.updateOrCreate({
+            uuid: uuid
+          }, {
+            status: status
+          })
+        } catch (e) {
+          return response.status(500).json({
+            erro: e
+          })
+          // LEMBRAR: Gerar Log de erro
+        }
+
+        if(status === 'approved') {
+          const today = new Date();
+          const novaData = new Date(today.getTime() + (30 * 24 * 60 * 60 * 1000));
+          switch (userID.produto) {
+            case 'coins':
+              try {
+                await Accounts.updateOrCreate({
+                  id: userID.idConta
+                }, {
+                  saldo: userID.preco
+                })
+              } catch (e) {
+                return response.status(500).json({
+                  erro: e
+                })
+                // LEMBRAR: Gerar Log de erro
+              }
+              break;
+            case 'vipBasic':
+              try {
+                await Accounts.updateOrCreate({
+                  id: userID.idConta
+                }, {
+                  vip: 1,
+                  viptime: novaData.getTime()
+                })
+                return response.status(200)
+              } catch (e) {
+                console.log(e)
+                return response.status(500).json({
+                  erro: e
+                })
+                // LEMBRAR: Gerar Log de erro
+              }
+            case 'vipPlus':
+              try {
+                await Accounts.updateOrCreate({
+                  id: userID.idConta
+                }, {
+                  vip: 2,
+                  viptime: novaData.getTime()
+                })
+              } catch (e) {
+                // LEMBRAR: Gerar Log de erro
+                return response.status(500).json({
+                  erro: e
+                })
+              }
+              break;
+            case 'vipUltra':
+              try {
+                await Accounts.updateOrCreate({
+                  id: userID.idConta
+                }, {
+                  vip: 3,
+                  viptime: novaData.getTime()
+                })
+              } catch (e) {
+                // LEMBRAR: Gerar Log de erro
+                return response.status(500).json({
+                  erro: e
+                })
+              }
+              break;
+          }
+          return response.status(200)
+        }
     }
-  }*/
-  private isTokenExpired(expirationDate: DateTime): boolean {
-    const currentDateTime = DateTime.now()
-    const tokenExpirationDate = expirationDate.toJSDate()
+    public async pagamentoSeguro({request, response}: HttpContextContract) {
+      const body = request.all();
+      const status = body.status;
+      const uuid = body.external_reference;
 
-    return currentDateTime.toMillis() >= tokenExpirationDate.getTime()
-  }
+      if (status === 'success') {
+        const url = `http://127.0.0.1:5000/api/notific/${uuid}`;
+        const options = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            status: 'approved',
+          }),
+        };
+        const res = await fetch(url, options);
+        if (res.ok) {
+          response.redirect('https://ucp.paradiseroleplay.pt');
+        } else {
+          console.error('Error sending notification:', res.statusText);
+          response.status(500).send('Internal Server Error');
+        }
+      }
+      response.redirect('https://ucp.paradiseroleplay.pt');
+    }
+    private isTokenExpired(expirationDate: DateTime): boolean {
+      const currentDateTime = DateTime.now()
+      const tokenExpirationDate = expirationDate.toJSDate()
+
+      return currentDateTime.toMillis() >= tokenExpirationDate.getTime()
+    }
 
 }
