@@ -747,6 +747,8 @@ export default class AplicacoesController {
                     <div class='container'>
                       <h1>Oh não,</h1>
                       <h3>${solicitante.name} parece sua aplicação foi recusada por um de nossos administradores</h3>
+                      <p>Sua aplicação foi recusada pelo seguinte motivo:</p>
+                      <p>${aplicacao.mensagem}</p><br>
                       <p style='font-weight: bold'>Mas não desanime, você pode tentar mais uma vez, vá ao nosso <a href='https://ucp.paradiseroleplay.pt/'>painel</a> veja qual foi a mensagem que nosso administrador deixou a você e corrija o quanto antes.!</p>
                       <p>Para se juntar à nossa comunidade no Discord, clique <a href='https://discord.gg/MymDXAdexs'>aqui</a>, será muito bem-vindo. Lá poderá interagir diretamente com outros jogadores e participar de eventos exclusivos.</p>
                       <p>Para criar seu personagem, por favor, preencha a aplicação de criação de personagens clicando <a href='https://ucp.paradiseroleplay.pt/personagem-criar.html'>aqui</a>.</p>
@@ -792,11 +794,6 @@ export default class AplicacoesController {
         erro: error,
       })
     }
-
-  }
-
-  public async recovery ({request, response}): HttpContextContract {
-    
   }
 
   private gerarNumerosAleatoriosString(max: number): string {
