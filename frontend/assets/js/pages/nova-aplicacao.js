@@ -32,6 +32,7 @@ if (personagensSemAplicacao !== null) {
 
 if (appEditar !== null) {
     $('#mensagemDiv').removeClass('visually-hidden');
+    mensagemInput.attr('disabled', '');
     nomeInput.val(appEditar.nome);
     sobrenomeInput.val(appEditar.sobrenome);
     dataNascimentoInput.val(`${appEditar.nascimento.split('/')[2]}-${appEditar.nascimento.split('/')[1]}-${appEditar.nascimento.split('/')[0]}`);
@@ -47,8 +48,6 @@ if (appEditar !== null) {
         erroAlert.removeClass("visually-hidden");
         $('#enviarAplicacao').remove();
     }
-
-    mensagemInput.attr('disabled', '');
 }
 
 const formatarData = data => {
