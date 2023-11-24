@@ -687,7 +687,7 @@ export default class AplicacoesController {
               section: 'Aplicação de personagem',
               alterado: JSON.stringify({
                 message: resposta,
-                aprovado: status === 1 ? 'Sim' : 'Não'
+                aprovado: status === 1 ? 'Aprovado' : 'Reprovado'
               })
             })
             // @ts-ignore

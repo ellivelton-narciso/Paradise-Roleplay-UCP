@@ -12,6 +12,8 @@ import { MercadoPagoConfig, Preference } from 'mercadopago'
 import { v4 } from 'uuid'
 import Compra from 'App/Models/Compra'
 import * as console from 'console'
+import Serverdata from 'App/Models/Serverdata'
+import { isNumber } from '@poppinss/utils/build/src/Helpers/types'
 /*import { promisify } from 'util';
 import { exec } from 'child_process';*/
 
@@ -1201,6 +1203,19 @@ export default class AccountsController {
               }
               break;
           }
+          try {
+            const atualSaldo = await Serverdata.findBy('id', 1).then((data)=> data ? data.finances : null)
+            if (!atualSaldo) {
+              return response.status(200)
+            }
+            await Serverdata.updateOrCreate({id: 1}, {
+              finances: isNumber(atualSaldo) ? atualSaldo + userID.preco : parseInt(atualSaldo) + userID.preco
+            })
+          } catch (e) {
+            console.log(e)
+            return response.status(200)
+          }
+
           return response.status(200)
         }
     }
