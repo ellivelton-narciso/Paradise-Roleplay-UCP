@@ -13,7 +13,7 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="d5201115-d041-448d-ba03-14abe2f980a4">
-      <console name="Connection" type="STANDARD" schema="main" session="Main"><![CDATA[SELECT * FROM sys.tables;]]></console>
+      <console name="Connection" type="STANDARD" schema="" session="Main" />
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -28,17 +28,40 @@
     <connection id="d5201115-d041-448d-ba03-14abe2f980a4" />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
-    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.serverdata" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.crimes_list" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.characters" active-filter-id="d860e531-3207-4e45-b812-c087ca2bc45a">
+      <filter id="d860e531-3207-4e45-b812-c087ca2bc45a" name="alexandre_Silva" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="name" operator="=" value="alexandre_Silva" active="true" />
+      </filter>
+    </filter-actions>
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.accounts" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.api_tokens" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.contacts" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.shops" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.sms" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.traffic-tickets" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.compras" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.serverdata" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.vehicles" active-filter-id="668f5d5f-0865-43f2-8ea3-b61637f4c33c">
+      <filter id="668f5d5f-0865-43f2-8ea3-b61637f4c33c" name="Murilo_Henrique" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="owner" operator="=" value="Murilo_Henrique" active="true" />
+      </filter>
+    </filter-actions>
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.business" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.recoveries" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.recovery" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.bank_accounts" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.areas" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.rooms" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.logs" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.shops" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.houses" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.cars" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.aplicacoes" active-filter-id="4cb5c282-af42-4097-bc45-07a08fd62f59">
       <filter id="4cb5c282-af42-4097-bc45-07a08fd62f59" name="Gustavo" temporary="false" custom-name="false" type="basic" join-type="AND">
         <condition column="nome" operator="=" value="Gustavo" active="true" />
       </filter>
     </filter-actions>
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.inventory" active-filter-id="EMPTY_FILTER" />
   </component>
   <component name="DBNavigator.Project.ExecutionManager">
     <retain-sticky-names value="false" />
@@ -66,7 +89,7 @@
           <description value="" />
           <database-type value="SQLITE" />
           <config-type value="BASIC" />
-          <database-version value="3.41" />
+          <database-version value="3.44" />
           <driver-source value="BUNDLED" />
           <driver-library value="" />
           <driver value="" />
@@ -125,7 +148,7 @@
           <tcp-port-from value="4000" />
           <tcp-port-to value="4999" />
         </debugger>
-        <object-filters hide-empty-schemas="true" hide-pseudo-columns="false">
+        <object-filters hide-empty-schemas="true" hide-pseudo-columns="false" hide-audit-columns="false">
           <object-type-filter>
             <object-type name="SCHEMA" enabled="true" />
             <object-type name="USER" enabled="true" />
@@ -193,42 +216,42 @@
         </object-type-filter>
       </filters>
       <sorting>
-        <object-type name="COLUMN" sorting-type="NAME" />
-        <object-type name="FUNCTION" sorting-type="NAME" />
-        <object-type name="PROCEDURE" sorting-type="NAME" />
-        <object-type name="ARGUMENT" sorting-type="POSITION" />
-        <object-type name="TYPE ATTRIBUTE" sorting-type="POSITION" />
+        <object-type name="column" sorting-type="NAME" />
+        <object-type name="function" sorting-type="NAME" />
+        <object-type name="procedure" sorting-type="NAME" />
+        <object-type name="argument" sorting-type="POSITION" />
+        <object-type name="type attribute" sorting-type="POSITION" />
       </sorting>
       <default-editors>
-        <object-type name="VIEW" editor-type="SELECTION" />
-        <object-type name="PACKAGE" editor-type="SELECTION" />
-        <object-type name="TYPE" editor-type="SELECTION" />
+        <object-type name="view" editor-type="SELECTION" />
+        <object-type name="package" editor-type="SELECTION" />
+        <object-type name="type" editor-type="SELECTION" />
       </default-editors>
     </browser-settings>
     <navigation-settings>
       <lookup-filters>
         <lookup-objects>
-          <object-type name="SCHEMA" enabled="true" />
-          <object-type name="USER" enabled="false" />
-          <object-type name="ROLE" enabled="false" />
-          <object-type name="PRIVILEGE" enabled="false" />
-          <object-type name="CHARSET" enabled="false" />
-          <object-type name="TABLE" enabled="true" />
-          <object-type name="VIEW" enabled="true" />
-          <object-type name="MATERIALIZED VIEW" enabled="true" />
-          <object-type name="INDEX" enabled="true" />
-          <object-type name="CONSTRAINT" enabled="true" />
-          <object-type name="DATASET TRIGGER" enabled="true" />
-          <object-type name="DATABASE TRIGGER" enabled="true" />
-          <object-type name="SYNONYM" enabled="false" />
-          <object-type name="SEQUENCE" enabled="true" />
-          <object-type name="PROCEDURE" enabled="true" />
-          <object-type name="FUNCTION" enabled="true" />
-          <object-type name="PACKAGE" enabled="true" />
-          <object-type name="TYPE" enabled="true" />
-          <object-type name="DIMENSION" enabled="false" />
-          <object-type name="CLUSTER" enabled="false" />
-          <object-type name="DBLINK" enabled="true" />
+          <object-type name="schema" enabled="true" />
+          <object-type name="user" enabled="false" />
+          <object-type name="role" enabled="false" />
+          <object-type name="privilege" enabled="false" />
+          <object-type name="charset" enabled="false" />
+          <object-type name="table" enabled="true" />
+          <object-type name="view" enabled="true" />
+          <object-type name="materialized view" enabled="true" />
+          <object-type name="index" enabled="true" />
+          <object-type name="constraint" enabled="true" />
+          <object-type name="dataset trigger" enabled="true" />
+          <object-type name="database trigger" enabled="true" />
+          <object-type name="synonym" enabled="false" />
+          <object-type name="sequence" enabled="true" />
+          <object-type name="procedure" enabled="true" />
+          <object-type name="function" enabled="true" />
+          <object-type name="package" enabled="true" />
+          <object-type name="type" enabled="true" />
+          <object-type name="dimension" enabled="false" />
+          <object-type name="cluster" enabled="false" />
+          <object-type name="dblink" enabled="true" />
         </lookup-objects>
         <force-database-load value="false" />
         <prompt-connection-selection value="true" />
@@ -304,6 +327,7 @@
       <confirmations>
         <save-changes value="false" />
         <revert-changes value="true" />
+        <exit-on-changes value="ASK" />
       </confirmations>
     </code-editor-settings>
     <code-completion-settings>
