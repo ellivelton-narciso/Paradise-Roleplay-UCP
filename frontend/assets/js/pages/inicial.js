@@ -173,16 +173,18 @@ const renderComPersonagens = () => {
                 document.getElementById(`cPer-${i}`).classList.add('d-none')
                 document.getElementById(`ePer-${i}`).classList.remove('d-none')
                 document.getElementById(`ePer-${i}`).classList.add('d-block')
-                document.getElementById(`ePer-${i}`).addEventListener('click', ()=> {
-                    const myModal = new bootstrap.Modal(document.getElementById('myModal'));
-                    myModal.show();
-                    $('#nomeEditar').val(res.personagens[i].name)
-                    $('#skinEditar').val(res.personagens[i].skin)
-                    document.getElementById('skinEditar').classList.remove('is-invalid')
-                    document.getElementById('errorMessage').classList.add('visually-hidden')
+                
+                const criarEventoEditar = (index) => {
+                    return () => {
+                        const myModal = new bootstrap.Modal(document.getElementById('myModal'));
+                        myModal.show();
+                        $('#nomeEditar').val(res.personagens[index].name)
+                        $('#skinEditar').val(res.personagens[index].skin)
+                        document.getElementById('skinEditar').classList.remove('is-invalid')
+                        document.getElementById('errorMessage').classList.add('visually-hidden')
 
-                    // Tratar ação de salvar os dados do modal
-                    document.getElementById('salvar').addEventListener('click', () => {
+                        // Tratar ação de salvar os dados do modal
+                        document.getElementById('salvar').addEventListener('click', () => {
                         const regexNumeros = /^[0-9]+$/;
                         const idEditar = res.personagens[i].id
                         const idConta = Number(JSON.parse(localStorage.getItem('usuario')).userId)
@@ -239,7 +241,10 @@ const renderComPersonagens = () => {
 
 
                     });
-                })
+                    };
+                };
+                
+                document.getElementById(`ePer-${i}`).addEventListener('click', criarEventoEditar(i))
 
             }
         },

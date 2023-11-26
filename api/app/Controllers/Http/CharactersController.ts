@@ -5,6 +5,7 @@ import ApiToken from 'App/Models/ApiToken'
 import Aplicacoes from 'App/Models/Aplicacoe'
 import BankAccounts from 'App/Models/BankAccount'
 import Log from 'App/Models/Log'
+import Vehicles from 'App/Models/Vehicles'
 
 export default class CharactersController {
     public async index({ params, response }: HttpContextContract) {
@@ -265,5 +266,62 @@ export default class CharactersController {
             })
         }
       }
+    }
+    
+    public async vehicles ({params, request, response}: HttpContextContract) {
+      const authorization: string[] = response.header('Authorization', 'Bearer').request.rawHeaders
+      const findAuthorization: number = authorization.indexOf('Authorization') + 1
+      const validHeader: boolean = authorization[findAuthorization].split(' ')[0] === 'Bearer' && authorization[findAuthorization].split(' ').length === 2
+      const tokenBody: string = authorization[findAuthorization].split(' ')[1]
+      if (tokenBody == undefined) {
+        return response.status(401).json({
+          status: 401,
+          msg: 'Sem permissão ou token está inválido.'
+        })
+      }
+      const user: number | boolean = await ApiToken.findBy('token', tokenBody).then(data => {
+            if (data) {
+                return data.userId
+            } else {
+                return false
+            }
+        })
+      const tokenOK: boolean = await Accounts.findBy('id', user).then(res => {
+        return !res ? false : res.admin > 1
+      })
+      
+      if (validHeader && tokenOK) {
+        const model = request.body().model
+        
+        try {
+          const user = await Vehicles.findBy('id', params.id)
+          if (!user) {
+            return response.status(401).json({
+              status: 401,
+              msg: 'ID inexistente'
+            })
+          }
+          await Vehicles.updateOrCreate({'id': params.id}, {
+            'model': model
+          })
+          return response.status(201).json({
+            status: 201,
+            msg: 'Veículo alterado'
+          })
+          
+        } catch (e) {
+          return response.status(500).json({
+            status: 500,
+            msg: 'Erro interno',
+            erro: e
+          })
+        }
+      } else {
+        return response.status(401).json({
+          status: 401,
+          msg: 'Sem permissões'
+        })
+      }
+      
     }
 }

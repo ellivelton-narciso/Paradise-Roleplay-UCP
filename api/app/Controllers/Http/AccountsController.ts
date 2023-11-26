@@ -51,6 +51,7 @@ export default class AccountsController {
               await Accounts.updateOrCreate({id: user.id}, {ip: ipv4})
             }
             catch (error) {
+        console.log(error)
               return response.status(500).json({
                 status: 500,
                 msg: 'Erro interno.',
@@ -1047,7 +1048,10 @@ export default class AccountsController {
         const backUrl = Env.get('BACK_URL')
         const notificUrl = `${Env.get('NOTIFIC_URL')}/${uuid}`
 
-        const result = await preference.create({
+        
+
+        try {
+          const result = await preference.create({
           body: {
             items: [
               {
@@ -1074,15 +1078,14 @@ export default class AccountsController {
             notification_url: notificUrl
           },
         })
-        const compra = {
+          const compra = {
           uuid: uuid,
           idConta: user.id,
           produto: produto,
           preco: preco,
           status: 'nothing'
         }
-
-        if (result) {
+          if (result) {
           try {
             await Compra.create(compra)
           } catch (e) {
@@ -1099,7 +1102,14 @@ export default class AccountsController {
           });
 
         } else {
-          return response.status(400).json(result);
+            return response.status(400).json(result);
+          }
+        } catch (e) {
+          return response.status(500).json({
+            status: 500,
+            msg: 'Erro ao realizar compra.',
+            erro: e
+          })
         }
 
       } catch (error) {
@@ -1112,7 +1122,7 @@ export default class AccountsController {
       }
     }
     public async notific({ request, params, response }: HttpContextContract) {
-        const body = request.body()
+        const body = request.all()
         const status = body.status
         const uuid = params.uuid
         const userID = await Compra.findBy('uuid', uuid)
@@ -1140,7 +1150,7 @@ export default class AccountsController {
 
         if(status === 'approved') {
           const today = new Date();
-          const novaData = new Date(today.getTime() + (30 * 24 * 60 * 60 * 1000));
+          const novaData = new Date(today.getTime() + (30 * 86400));
           switch (userID.produto) {
             case 'coins':
               try {

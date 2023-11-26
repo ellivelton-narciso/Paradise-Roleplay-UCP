@@ -66,23 +66,21 @@ const renderTabela = ()=> {
                                         return '0 dias';
                                     }
                                     function diferencaDiasQntd(timestamp1, timestamp2) {
-                                      const date1 = new Date(timestamp1);
-                                      const date2 = new Date(timestamp2);
-                                      const differenceInMilliseconds = date2.getTime() - date1.getTime();
-                                      const differenceInDays = Math.floor(differenceInMilliseconds / (24 * 60 * 60 * 1000));
+                                        const differenceInSeconds = (timestamp2 * 1000) - timestamp1; // Convertendo segundos para milissegundos
+                                        const differenceInDays = Math.floor(differenceInSeconds / (86400 * 1000)); // 86400 segundos em um dia
 
-                                      if (differenceInDays < 365) {
-                                        if (differenceInDays === 1) {
-                                            return `${differenceInDays} dia`;
+                                        if (differenceInDays < 365) {
+                                            if (differenceInDays === 1) {
+                                                return `${differenceInDays} dia`;
+                                            }
+                                            return `${differenceInDays} dias`;
+                                        } else {
+                                            const years = Math.floor(differenceInDays / 365);
+                                            if (years === 1) {
+                                                return `${years} ano`;
+                                            }
+                                            return `${years} anos`;
                                         }
-                                        return `${differenceInDays} dias`;
-                                      } else {
-                                        const years = Math.floor(differenceInDays / 365);
-                                        if (years === 1) {
-                                            return `${years} ano`;
-                                        }
-                                        return `${years} anos`;
-                                      }
                                     }
                                     return diferencaDiasQntd( today, data)
 
@@ -140,12 +138,11 @@ table.on('click', '.btn-primary', function () {
     const emailValue = userApp.email === 'Undefined' ? '' : userApp.email;
 
     function diferencaDias(timestamp1, timestamp2) {
-      const date1 = new Date(timestamp1);
-      const date2 = new Date(timestamp2);
-      const differenceInMilliseconds = date2.getTime() - date1.getTime();
-      return Math.floor(differenceInMilliseconds / (24 * 60 * 60 * 1000));
+        const date1 = new Date(timestamp1 * 1000);
+        const date2 = new Date(timestamp2);
+        const differenceInMilliseconds =  date1.getTime() - date2.getTime();
+        return Math.floor(differenceInMilliseconds / (86400 * 1000));
     }
-
     swal({
         title: 'Editar Usuário',
         content: {
@@ -176,7 +173,7 @@ table.on('click', '.btn-primary', function () {
                                 </div>
                                 <div class="mb-3">
                                     <label for="vipDuration" class="form-label">Tempo de VIP</label>
-                                    <input min="0" max="3650" type="number" id="vipDuration" class="form-control" value="${diferencaDias(today, userApp.viptime)}">
+                                    <input min="0" max="3650" type="number" id="vipDuration" class="form-control" value="${userApp.viptime === 0 ? 0 : diferencaDias(userApp.viptime, today)}">
                                 </div>
                                 <div class="mb-3 form-check">
                                     <input type="checkbox" id="admin" class="form-check-input" ${userApp.admin === 1 ? 'checked' : ''}>
@@ -201,16 +198,16 @@ table.on('click', '.btn-primary', function () {
         focusConfirm: false,
     }).then((confirm) => {
         if (confirm) {
-            function addDaysToDate(date, days) {
-              const newDate = new Date(date);
-              newDate.setDate(newDate.getDate() + days);
-              return newDate.getTime()
+            function addDaysToDate(dateInMilliseconds, days) {
+                const newDate = new Date(dateInMilliseconds);
+                newDate.setDate(newDate.getDate() + days);
+                return newDate.getTime() / 1000; // Convertendo de milissegundos para segundos
             }
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const vip = parseInt(document.getElementById('vip').value);
-            const vipDuration = addDaysToDate(today, parseInt(document.getElementById('vipDuration').value))
+            const vipDuration = parseInt(document.getElementById('vipDuration').value) === 0 ? 0 : addDaysToDate(today, parseInt(document.getElementById('vipDuration').value))
             const admin = document.getElementById('admin').checked ? 1 : 0
             const master = document.getElementById('master').checked ? 2 : 0
 

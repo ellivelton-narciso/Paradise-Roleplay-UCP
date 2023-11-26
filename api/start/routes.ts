@@ -21,6 +21,7 @@ Route.group(()=>{
   Route.get('/isValid', 'AccountsController.isValid')
   Route.post('/compraFeita', 'AccountsController.compra')
   Route.post('/notific/:uuid', 'AccountsController.notific')
+  Route.get('/notific/:uuid', 'AccountsController.notific')
   Route.get('/pagamento_seguro', 'AccountsController.pagamentoSeguro')
   Route.get('/characters/:id', 'CharactersController.index').where('id', /^[0-9]+$/)
   Route.post('/characters/:id', 'CharactersController.update').where('id', /^[0-9]+$/)
@@ -30,5 +31,6 @@ Route.group(()=>{
   Route.get('/aplicacoes/:id', 'AplicacoesController.show').where('id', /^[0-9]+$/)
   Route.get('/aplicacoes/user/:id', 'AplicacoesController.showUser').where('id', /^[0-9]+$/)
   Route.get('/logs', 'LogsController.show')
+  Route.post('/vehicle/:id', 'AplicacoesController.vehicle')
 
 }).prefix('/api')
