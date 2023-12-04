@@ -110,3 +110,12 @@ export default class SspController {
 	
 	 }
 }
+
+// Não lembro se o código acima está funcional.
+
+// LEMBRAR: A ideia seria fazer um painel para consulta de dados para os membros do SSP, consultar residência, quais veículos possui e onde trabalha pelo cpf
+// Consultar dono pela placa do veículo.
+// Exclusivo para Policia Civil - Consultar dados bancários, historico de ligações caso o chip não tenha sido destruído, histórico de sms caso o chip não tenha sido destruído e transações bancárias pelo cpf. - Robbie precisa deixar os logs de transações em uma tabela, do jeito que está, até poderia ser feito. Mas seria uma gambiarra do krl.
+// Ao consultar os dados para Policia Civil, requer aprovação de um administrador nível Dono e Desenvolvedores para liberar as consultas para Policia Civil
+
+// by Vako
