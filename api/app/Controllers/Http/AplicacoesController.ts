@@ -121,6 +121,7 @@ export default class AplicacoesController {
       }
 
       const aplicacaoExistente: Aplicacoes | null = await Database.from('aplicacoes').where('nome', nome).where('sobrenome', sobrenome).first()
+      console.log(aplicacaoExistente)
       if (!aplicacaoExistente) {
         try {
           await Aplicacoes.create({
@@ -405,26 +406,46 @@ export default class AplicacoesController {
                 msg: 'Ocorreu um erro ao gerar RG/CPF. Caso o erro persista, contacte um desenvolvedor.',
               })
             }
-            await Aplicacoes.updateOrCreate({
-              'id': params.id,
-            }, {
-              'status': status,
-              'mensagem': resposta,
-            })
-            await Log.create({
-              idAdmin: idAdm,
-              idUser: solicitante.id,
-              section: 'Aplicação de personagem',
-              alterado: JSON.stringify({
-                message: resposta,
-                aprovado: status === 1 ? 'Aprovado' : 'Reprovado',
-              }),
-            })
+            // Atualizar status da aplicação.
+            try {
+              await Aplicacoes.updateOrCreate({
+                'id': params.id,
+              }, {
+                'status': status,
+                'mensagem': resposta,
+              })
+            } catch (e) {
+              console.log(e)
+              return response.status(200).json({
+                status: 500,
+                msg: 'Erro ao atualizar status da aplicação.'
+              })
+            }
+            // Gerar log
+            try {
+              await Log.create({
+                idAdmin: idAdm,
+                idUser: solicitante.id,
+                section: 'Aplicação de personagem',
+                alterado: JSON.stringify({
+                  message: resposta,
+                  aprovado: status === 1 ? 'Aprovado' : 'Reprovado',
+                }),
+              })
+            } catch (e) {
+              console.log(e)
+              return response.status(200).json({
+                status: 500,
+                msg: 'Erro ao gerar Log',
+                erro: e
+              })
+            }
             if (jaAprovado) {
               // @ts-ignore
               if(solicitante.email !== '' || solicitante.email !== 'Undefined') {
+                // Enviar Email
                 try {
-                const html = `
+                  const html = `
                   <html lang='pt-BR'>
                   <head>
                     <title>Paradise Roleplay - Parabéns você foi aprovado</title>
@@ -494,7 +515,8 @@ export default class AplicacoesController {
                     'Paradise Roleplay - Parabéns você foi aprovado',
                     html,
                   )
-                  } catch (e) {
+                } catch (e) {
+                  console.log(e)
                   return response.status(500).json({
                     status: 500,
                     msg: 'Erro ao enviar email',
@@ -502,7 +524,6 @@ export default class AplicacoesController {
                   })
                 }
               }
-              //Log
               return response.status(200).json({
                 status: 201,
                 msg: 'Personagem criado antes da UCP aprovado na whitelist.',
@@ -548,6 +569,7 @@ export default class AplicacoesController {
                 life_state: 0,
               })
             } catch (e) {
+              console.log(e)
               return response.status(200).json({
                 status: 404,
                 msg: 'Erro ao criar personagem.',
@@ -570,70 +592,70 @@ export default class AplicacoesController {
                   await Accounts.updateOrCreate({ 'id': solicitante.id }, { [dynamicKey]: novoPersonagem.id })
                   try {
                     const html = `
-<html lang='pt-BR'>
-<head>
-  <title>Paradise Roleplay - Parabéns você foi aprovado</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
-      margin: 0;
-      padding: 0;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-      background-color: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-      color: #ff6600;
-    }
-
-    h3 {
-      color: #333;
-    }
-
-    p {
-      color: #333;
-      font-size: 16px;
-    }
-
-    .attention-banner {
-      background-color: #ffcc00; /* Cor de fundo mais suave */
-      color: #333; /* Cor do texto mais escura */
-      padding: 10px;
-      text-align: center;
-      font-weight: bold;
-      border-radius: 5px; /* Borda arredondada */
-    }
-
-    a {
-      color: #ff6600;
-      text-decoration: none;
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body>
-  <div class='container'>
-    <h1>Parabéns você foi aprovado, ${solicitante.name}!</h1>
-    <h3>Agora você pode jogar no Paradise Roleplay com seu personagem ${novoPersonagem.name}!</h3>
-    <p>Monte sua própria vida virtual no servidor, para entrar aqui está o endereço do nosso servidor para você colocar no seu launcher SAMP, <span>samp.paradiseroleplay.pt:7777</span></p>
-    <div class='attention-banner'>
-      <p>Atenção: Para entrar no servidor, utilize o mesmo nick que você usa para logar em nosso Painel de Controle (${solicitante.name}). Somente dentro do servidor você poderá escolher qual personagem usar, caso tenha mais de um.</p>
-    </div>
-    <p>Para se juntar à nossa comunidade no Discord, clique <a href='https://discord.gg/MymDXAdexs'>aqui</a>, será muito bem-vindo. Lá poderá interagir diretamente com outros jogadores e participar de eventos exclusivos.</p>
-    <p>Para criar seu personagem, por favor, preencha a aplicação de criação de personagens clicando <a href='https://ucp.paradiseroleplay.pt/personagem-criar.html'>aqui</a>.</p>
-    <p>Caso queira acessar nosso fórum, poderá clicar <a href='https://paradiseroleplay.forumeiros.com/'>aqui</a> mesmo.</p>
-  </div>
-</body>
-</html>
-`
+                      <html lang='pt-BR'>
+                      <head>
+                        <title>Paradise Roleplay - Parabéns você foi aprovado</title>
+                        <style>
+                          body {
+                            font-family: Arial, sans-serif;
+                            background-color: #f2f2f2;
+                            margin: 0;
+                            padding: 0;
+                          }
+                      
+                          .container {
+                            max-width: 600px;
+                            margin: 0 auto;
+                            padding: 20px;
+                            background-color: #ffffff;
+                            border-radius: 10px;
+                            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+                          }
+                      
+                          h1 {
+                            color: #ff6600;
+                          }
+                      
+                          h3 {
+                            color: #333;
+                          }
+                      
+                          p {
+                            color: #333;
+                            font-size: 16px;
+                          }
+                      
+                          .attention-banner {
+                            background-color: #ffcc00; /* Cor de fundo mais suave */
+                            color: #333; /* Cor do texto mais escura */
+                            padding: 10px;
+                            text-align: center;
+                            font-weight: bold;
+                            border-radius: 5px; /* Borda arredondada */
+                          }
+                      
+                          a {
+                            color: #ff6600;
+                            text-decoration: none;
+                            font-weight: bold;
+                          }
+                        </style>
+                      </head>
+                      <body>
+                        <div class='container'>
+                          <h1>Parabéns você foi aprovado, ${solicitante.name}!</h1>
+                          <h3>Agora você pode jogar no Paradise Roleplay com seu personagem ${novoPersonagem.name}!</h3>
+                          <p>Monte sua própria vida virtual no servidor, para entrar aqui está o endereço do nosso servidor para você colocar no seu launcher SAMP, <span>samp.paradiseroleplay.pt:7777</span></p>
+                          <div class='attention-banner'>
+                            <p>Atenção: Para entrar no servidor, utilize o mesmo nick que você usa para logar em nosso Painel de Controle (${solicitante.name}). Somente dentro do servidor você poderá escolher qual personagem usar, caso tenha mais de um.</p>
+                          </div>
+                          <p>Para se juntar à nossa comunidade no Discord, clique <a href='https://discord.gg/MymDXAdexs'>aqui</a>, será muito bem-vindo. Lá poderá interagir diretamente com outros jogadores e participar de eventos exclusivos.</p>
+                          <p>Para criar seu personagem, por favor, preencha a aplicação de criação de personagens clicando <a href='https://ucp.paradiseroleplay.pt/personagem-criar.html'>aqui</a>.</p>
+                          <p>Caso queira acessar nosso fórum, poderá clicar <a href='https://paradiseroleplay.forumeiros.com/'>aqui</a> mesmo.</p>
+                        </div>
+                      </body>
+                      </html>
+                    `
                     await EmailService.sendMail(
                       solicitante.email,
                       'Paradise Roleplay - Parabéns você foi aprovado',
@@ -667,6 +689,7 @@ export default class AplicacoesController {
             }
 
           } catch (error) {
+            console.log(error)
             return response.status(200).json({
               status: 500,
               msg: 'Erro interno ao criar personagem.',

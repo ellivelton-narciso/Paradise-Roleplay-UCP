@@ -61,11 +61,20 @@ const avaliarAplicacao = (status) => {
             erroAlert.classList.remove("visually-hidden");
             erroAlert.textContent = res.msg;
             switch (res.status) {
+                case 200:
                 case 201:
                     document.querySelector('#negarAplicacao').classList.add('disabled')
                     document.querySelector('#aprovarAplicacao').classList.add('disabled')
                     erroAlert.classList.remove('alert-danger')
                     erroAlert.classList.add('alert-success')
+                    return;
+                case 403:
+                    document.querySelector('#negarAplicacao').classList.add('disabled')
+                    document.querySelector('#aprovarAplicacao').classList.add('disabled')
+                    return;
+                case 500:
+                    document.querySelector('#negarAplicacao').classList.add('disabled')
+                    document.querySelector('#aprovarAplicacao').classList.add('disabled')
                     return;
                 default:
                     logout()
