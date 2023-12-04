@@ -22,9 +22,7 @@
     </last-used-providers>
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files>
-      <object connection-id="d5201115-d041-448d-ba03-14abe2f980a4" object-ref="schemas/main/tables/cellphone" />
-    </open-files>
+    <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="d5201115-d041-448d-ba03-14abe2f980a4" />
@@ -36,12 +34,13 @@
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.sms" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.serverdata" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.weapons" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.vehicles" active-filter-id="EMPTY_FILTER">
-      <filter id="668f5d5f-0865-43f2-8ea3-b61637f4c33c" name="Gustavo_Rodrigues" temporary="false" custom-name="false" type="basic" join-type="AND">
-        <condition column="owner" operator="=" value="Gustavo_Rodrigues" active="true" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.vehicles" active-filter-id="668f5d5f-0865-43f2-8ea3-b61637f4c33c">
+      <filter id="668f5d5f-0865-43f2-8ea3-b61637f4c33c" name="Osvaldo_Nascimento" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="owner" operator="=" value="Osvaldo_Nascimento" active="true" />
       </filter>
     </filter-actions>
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.recoveries" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.factions" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.areas" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.logs" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.houses" active-filter-id="EMPTY_FILTER" />
@@ -53,11 +52,15 @@
     </filter-actions>
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.crimes_list" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.characters" active-filter-id="d860e531-3207-4e45-b812-c087ca2bc45a">
-      <filter id="d860e531-3207-4e45-b812-c087ca2bc45a" name="Murilo_Henrique" temporary="false" custom-name="false" type="basic" join-type="AND">
-        <condition column="name" operator="=" value="Murilo_Henrique" active="true" />
+      <filter id="d860e531-3207-4e45-b812-c087ca2bc45a" name="Osvaldo_Nascimento" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="name" operator="=" value="Osvaldo_Nascimento" active="true" />
       </filter>
     </filter-actions>
-    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.accounts" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.accounts" active-filter-id="a18bf27c-5062-4b9e-84ec-4c883bf5c64a">
+      <filter id="a18bf27c-5062-4b9e-84ec-4c883bf5c64a" name="lucass" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="name" operator="=" value="lucass" active="true" />
+      </filter>
+    </filter-actions>
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.cellphone" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.chips" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.traffic-tickets" active-filter-id="EMPTY_FILTER" />
@@ -67,9 +70,10 @@
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.bank_accounts" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.rooms" active-filter-id="EMPTY_FILTER" />
     <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.cars" active-filter-id="EMPTY_FILTER" />
-    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.aplicacoes" active-filter-id="4cb5c282-af42-4097-bc45-07a08fd62f59">
-      <filter id="4cb5c282-af42-4097-bc45-07a08fd62f59" name="Gustavo" temporary="false" custom-name="false" type="basic" join-type="AND">
-        <condition column="nome" operator="=" value="Gustavo" active="true" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.jail" active-filter-id="EMPTY_FILTER" />
+    <filter-actions connection-id="d5201115-d041-448d-ba03-14abe2f980a4" dataset="main.aplicacoes" active-filter-id="7523582d-2b2a-42f1-9227-8c282d1579ba">
+      <filter id="7523582d-2b2a-42f1-9227-8c282d1579ba" name="Osvaldo" temporary="false" custom-name="false" type="basic" join-type="AND">
+        <condition column="nome" operator="=" value="Osvaldo" active="true" />
       </filter>
     </filter-actions>
   </component>
