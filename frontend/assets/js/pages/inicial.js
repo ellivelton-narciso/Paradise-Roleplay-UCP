@@ -243,9 +243,7 @@ const renderComPersonagens = () => {
                     });
                     };
                 };
-                
-                document.getElementById(`ePer-${i}`).addEventListener('click', criarEventoEditar(i))
-
+                document.getElementById(`ePer-${i}`).addEventListener('click', criarEventoEditar)
             }
         },
         error: ()=> logout()
