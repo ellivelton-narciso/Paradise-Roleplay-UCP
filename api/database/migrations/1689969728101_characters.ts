@@ -36,13 +36,15 @@ export default class extends BaseSchema {
         table.integer('sayanim')
         table.integer('fight')
         table.integer('faction')
-        table.integer('office')
+        table.integer('leader')
         table.integer('phone')
         table.integer('chip_1')
         table.integer('chip_2')
         table.integer('health')
         table.integer('armour')
         table.integer('life_state')
+        table.integer('salary')
+        table.string('cargo')
       })
     }
 

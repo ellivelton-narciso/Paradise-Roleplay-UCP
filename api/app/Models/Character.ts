@@ -7,6 +7,11 @@ export default class Character extends BaseModel {
   @column()
   public name: string
 
+  @column()
+  public cargo: string
+
+  @column()
+  public salary: number
 
   @column()
   public money: number
@@ -93,7 +98,7 @@ export default class Character extends BaseModel {
   public faction: number
 
   @column()
-  public office: number
+  public leader: number
 
   @column()
   public phone: number

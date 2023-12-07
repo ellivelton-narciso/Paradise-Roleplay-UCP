@@ -560,13 +560,15 @@ export default class AplicacoesController {
                 sayanim: 1,
                 fight: 4,
                 faction: 0,
-                office: 0,
+                leader: 0,
                 phone: -1,
                 chip_1: 0,
                 chip_2: 0,
                 health: 100.0,
                 armour: 0.0,
                 life_state: 0,
+                cargo: '',
+                salary: 0,
               })
             } catch (e) {
               console.log(e)
@@ -602,7 +604,7 @@ export default class AplicacoesController {
                             margin: 0;
                             padding: 0;
                           }
-                      
+
                           .container {
                             max-width: 600px;
                             margin: 0 auto;
@@ -611,20 +613,20 @@ export default class AplicacoesController {
                             border-radius: 10px;
                             box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
                           }
-                      
+
                           h1 {
                             color: #ff6600;
                           }
-                      
+
                           h3 {
                             color: #333;
                           }
-                      
+
                           p {
                             color: #333;
                             font-size: 16px;
                           }
-                      
+
                           .attention-banner {
                             background-color: #ffcc00; /* Cor de fundo mais suave */
                             color: #333; /* Cor do texto mais escura */
@@ -633,7 +635,7 @@ export default class AplicacoesController {
                             font-weight: bold;
                             border-radius: 5px; /* Borda arredondada */
                           }
-                      
+
                           a {
                             color: #ff6600;
                             text-decoration: none;
