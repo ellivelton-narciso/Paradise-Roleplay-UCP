@@ -79,12 +79,19 @@ export default class Character extends BaseModel {
 
   @column()
   public spawn: number
+  
 
   @column()
   public noobchat: number
 
   @column()
   public sayanim: number
+  
+  @column()
+  public hud: number
+  
+  @column()
+  public velocimetro: number
 
   @column()
   public fight: number
@@ -93,7 +100,10 @@ export default class Character extends BaseModel {
   public faction: number
 
   @column()
-  public office: number
+  public leader: number
+  
+  @column()
+  public cargo:string
 
   @column()
   public phone: number
@@ -101,6 +111,9 @@ export default class Character extends BaseModel {
   @column()
   public chip_1: number
 
+  @column()
+  public salary: number
+  
   @column()
   public chip_2: number
 
@@ -112,4 +125,16 @@ export default class Character extends BaseModel {
 
   @column()
   public life_state: number
+  
+  @column()
+  public helmet: number
+  
+  @column()
+  public fishing_box: number
+  
+  @column()
+  public jail: number
+  
+  @column()
+  public jail_time: number
 }

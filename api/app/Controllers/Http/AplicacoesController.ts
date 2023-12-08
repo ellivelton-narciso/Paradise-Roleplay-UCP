@@ -511,8 +511,8 @@ export default class AplicacoesController {
             try {
               await Character.create({
                 name: aplicacao.nome + `_` + aplicacao.sobrenome,
-                money: 750,
-                skin: 67,
+                money: 250,
+                skin: aplicacao.sexo === 1 ? 67 : 13,
                 payday: 3600,
                 level: 1,
                 xp: 0,
@@ -539,15 +539,21 @@ export default class AplicacoesController {
                 sayanim: 1,
                 fight: 4,
                 faction: 0,
-                office: 0,
+                leader: 0,
                 phone: -1,
                 chip_1: 0,
+                salary: 0,
                 chip_2: 0,
                 health: 100.0,
                 armour: 0.0,
                 life_state: 0,
+                helmet: 0,
+                fishing_box: 0,
+                jail: 0,
+                jail_time: 0
               })
             } catch (e) {
+              console.log(e)
               return response.status(200).json({
                 status: 404,
                 msg: 'Erro ao criar personagem.',
