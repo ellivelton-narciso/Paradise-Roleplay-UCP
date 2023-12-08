@@ -121,7 +121,6 @@ export default class AplicacoesController {
       }
 
       const aplicacaoExistente: Aplicacoes | null = await Database.from('aplicacoes').where('nome', nome).where('sobrenome', sobrenome).first()
-      console.log(aplicacaoExistente)
       if (!aplicacaoExistente) {
         try {
           await Aplicacoes.create({
@@ -524,6 +523,7 @@ export default class AplicacoesController {
                   })
                 }
               }
+              //Log
               return response.status(200).json({
                 status: 201,
                 msg: 'Personagem criado antes da UCP aprovado na whitelist.',
@@ -532,8 +532,8 @@ export default class AplicacoesController {
             try {
               await Character.create({
                 name: aplicacao.nome + `_` + aplicacao.sobrenome,
-                money: 750,
-                skin: 67,
+                money: 250,
+                skin: aplicacao.sexo === 1 ? 67 : 13,
                 payday: 3600,
                 level: 1,
                 xp: 0,
@@ -563,12 +563,15 @@ export default class AplicacoesController {
                 leader: 0,
                 phone: -1,
                 chip_1: 0,
+                salary: 0,
                 chip_2: 0,
                 health: 100.0,
                 armour: 0.0,
                 life_state: 0,
-                cargo: '',
-                salary: 0,
+                helmet: 0,
+                fishing_box: 0,
+                jail: 0,
+                jail_time: 0
               })
             } catch (e) {
               console.log(e)
@@ -594,70 +597,70 @@ export default class AplicacoesController {
                   await Accounts.updateOrCreate({ 'id': solicitante.id }, { [dynamicKey]: novoPersonagem.id })
                   try {
                     const html = `
-                      <html lang='pt-BR'>
-                      <head>
-                        <title>Paradise Roleplay - Parabéns você foi aprovado</title>
-                        <style>
-                          body {
-                            font-family: Arial, sans-serif;
-                            background-color: #f2f2f2;
-                            margin: 0;
-                            padding: 0;
-                          }
+<html lang='pt-BR'>
+<head>
+  <title>Paradise Roleplay - Parabéns você foi aprovado</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
 
-                          .container {
-                            max-width: 600px;
-                            margin: 0 auto;
-                            padding: 20px;
-                            background-color: #ffffff;
-                            border-radius: 10px;
-                            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
-                          }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+    }
 
-                          h1 {
-                            color: #ff6600;
-                          }
+    h1 {
+      color: #ff6600;
+    }
 
-                          h3 {
-                            color: #333;
-                          }
+    h3 {
+      color: #333;
+    }
 
-                          p {
-                            color: #333;
-                            font-size: 16px;
-                          }
+    p {
+      color: #333;
+      font-size: 16px;
+    }
 
-                          .attention-banner {
-                            background-color: #ffcc00; /* Cor de fundo mais suave */
-                            color: #333; /* Cor do texto mais escura */
-                            padding: 10px;
-                            text-align: center;
-                            font-weight: bold;
-                            border-radius: 5px; /* Borda arredondada */
-                          }
+    .attention-banner {
+      background-color: #ffcc00; /* Cor de fundo mais suave */
+      color: #333; /* Cor do texto mais escura */
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      border-radius: 5px; /* Borda arredondada */
+    }
 
-                          a {
-                            color: #ff6600;
-                            text-decoration: none;
-                            font-weight: bold;
-                          }
-                        </style>
-                      </head>
-                      <body>
-                        <div class='container'>
-                          <h1>Parabéns você foi aprovado, ${solicitante.name}!</h1>
-                          <h3>Agora você pode jogar no Paradise Roleplay com seu personagem ${novoPersonagem.name}!</h3>
-                          <p>Monte sua própria vida virtual no servidor, para entrar aqui está o endereço do nosso servidor para você colocar no seu launcher SAMP, <span>samp.paradiseroleplay.pt:7777</span></p>
-                          <div class='attention-banner'>
-                            <p>Atenção: Para entrar no servidor, utilize o mesmo nick que você usa para logar em nosso Painel de Controle (${solicitante.name}). Somente dentro do servidor você poderá escolher qual personagem usar, caso tenha mais de um.</p>
-                          </div>
-                          <p>Para se juntar à nossa comunidade no Discord, clique <a href='https://discord.gg/MymDXAdexs'>aqui</a>, será muito bem-vindo. Lá poderá interagir diretamente com outros jogadores e participar de eventos exclusivos.</p>
-                          <p>Para criar seu personagem, por favor, preencha a aplicação de criação de personagens clicando <a href='https://ucp.paradiseroleplay.pt/personagem-criar.html'>aqui</a>.</p>
-                          <p>Caso queira acessar nosso fórum, poderá clicar <a href='https://paradiseroleplay.forumeiros.com/'>aqui</a> mesmo.</p>
-                        </div>
-                      </body>
-                      </html>
-                    `
+    a {
+      color: #ff6600;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class='container'>
+    <h1>Parabéns você foi aprovado, ${solicitante.name}!</h1>
+    <h3>Agora você pode jogar no Paradise Roleplay com seu personagem ${novoPersonagem.name}!</h3>
+    <p>Monte sua própria vida virtual no servidor, para entrar aqui está o endereço do nosso servidor para você colocar no seu launcher SAMP, <span>samp.paradiseroleplay.pt:7777</span></p>
+    <div class='attention-banner'>
+      <p>Atenção: Para entrar no servidor, utilize o mesmo nick que você usa para logar em nosso Painel de Controle (${solicitante.name}). Somente dentro do servidor você poderá escolher qual personagem usar, caso tenha mais de um.</p>
+    </div>
+    <p>Para se juntar à nossa comunidade no Discord, clique <a href='https://discord.gg/MymDXAdexs'>aqui</a>, será muito bem-vindo. Lá poderá interagir diretamente com outros jogadores e participar de eventos exclusivos.</p>
+    <p>Para criar seu personagem, por favor, preencha a aplicação de criação de personagens clicando <a href='https://ucp.paradiseroleplay.pt/personagem-criar.html'>aqui</a>.</p>
+    <p>Caso queira acessar nosso fórum, poderá clicar <a href='https://paradiseroleplay.forumeiros.com/'>aqui</a> mesmo.</p>
+  </div>
+</body>
+</html>
+`
                     await EmailService.sendMail(
                       solicitante.email,
                       'Paradise Roleplay - Parabéns você foi aprovado',
